@@ -1889,6 +1889,7 @@
                 this.authSystem = authSystem;
                 this.isScanning = false;
                 this.stream = null;
+                this.quaggaInitialized = false;
             }
 
             async scanBarcode(barcode) {
@@ -1934,11 +1935,11 @@
 
                         return { success: true, product: formattedProduct };
                     } else {
-                        return { success: false, message: 'Product not found' };
+                        return { success: false, message: 'Product not found. Please try another barcode.' };
                     }
                 } catch (error) {
                     console.error('Product API error:', error);
-                    return { success: false, message: 'Failed to fetch product information' };
+                    return { success: false, message: 'Failed to fetch product information. Please check your connection.' };
                 } finally {
                     this.isScanning = false;
                     hideLoading();
@@ -2020,11 +2021,12 @@
                 productCard.innerHTML = `
                     <div class="product-header">
                         <div class="product-image">
-                            <i class="fas fa-utensils"></i>
+                            ${product.image_url ? `<img src="${product.image_url}" alt="${product.product_name}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">` : `<i class="fas fa-utensils"></i>`}
                         </div>
                         <div>
                             <h2>${product.product_name || 'Product name not available'}</h2>
                             ${product.brands ? `<p class="brand">Brand: ${product.brands}</p>` : ''}
+                            ${product.categories ? `<p class="brand">Category: ${product.categories}</p>` : ''}
                         </div>
                     </div>
 
@@ -2127,27 +2129,12 @@
                     video.srcObject = this.stream;
                     
                     // Initialize Quagga for barcode scanning
-                    Quagga.init({
-                        inputStream: {
-                            name: "Live",
-                            type: "LiveStream",
-                            target: video,
-                            constraints: {
-                                facingMode: "environment"
-                            }
-                        },
-                        decoder: {
-                            readers: ["ean_reader", "ean_8_reader", "code_128_reader"]
-                        }
-                    }, function(err) {
-                        if (err) {
-                            console.error(err);
-                            return;
-                        }
+                    if (!this.quaggaInitialized) {
+                        await this.initializeQuagga();
+                        this.quaggaInitialized = true;
+                    } else {
                         Quagga.start();
-                    });
-                    
-                    Quagga.onDetected(this.onBarcodeDetected.bind(this));
+                    }
                     
                 } catch (error) {
                     console.error('Error accessing camera:', error);
@@ -2156,13 +2143,47 @@
                 }
             }
 
+            async initializeQuagga() {
+                return new Promise((resolve, reject) => {
+                    Quagga.init({
+                        inputStream: {
+                            name: "Live",
+                            type: "LiveStream",
+                            target: document.getElementById('camera-preview'),
+                            constraints: {
+                                facingMode: "environment"
+                            }
+                        },
+                        decoder: {
+                            readers: ["ean_reader", "ean_8_reader", "code_128_reader"]
+                        },
+                        locator: {
+                            patchSize: "medium",
+                            halfSample: true
+                        }
+                    }, function(err) {
+                        if (err) {
+                            console.error('Quagga initialization error:', err);
+                            reject(err);
+                            return;
+                        }
+                        Quagga.start();
+                        resolve();
+                    });
+                    
+                    Quagga.onDetected(this.onBarcodeDetected.bind(this));
+                });
+            }
+
             stopCamera() {
                 if (this.stream) {
                     this.stream.getTracks().forEach(track => track.stop());
                     this.stream = null;
                 }
                 
-                Quagga.stop();
+                if (this.quaggaInitialized) {
+                    Quagga.stop();
+                }
                 
                 const video = document.getElementById('camera-preview');
                 video.srcObject = null;
@@ -2374,18 +2395,24 @@
                 
                 errorDiv.style.display = 'none';
                 
-                const result = await productScanner.scanBarcode(barcode);
-                
-                if (result.success) {
-                    productScanner.displayProduct(result.product);
-                } else {
-                    errorDiv.textContent = result.message;
+                try {
+                    const result = await productScanner.scanBarcode(barcode);
+                    
+                    if (result.success) {
+                        productScanner.displayProduct(result.product);
+                    } else {
+                        errorDiv.textContent = result.message;
+                        errorDiv.style.display = 'block';
+                    }
+                } catch (error) {
+                    console.error('Scan error:', error);
+                    errorDiv.textContent = 'An unexpected error occurred. Please try again.';
                     errorDiv.style.display = 'block';
+                } finally {
+                    // Reset button
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Scan Product';
                 }
-                
-                // Reset button
-                submitButton.disabled = false;
-                submitButton.textContent = 'Scan Product';
             });
 
             // Hide header on scroll down, show on scroll up
