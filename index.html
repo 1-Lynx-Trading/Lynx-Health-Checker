@@ -1,0 +1,2405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lynx - Scan Your Food, Know What You Eat</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        :root {
+            --primary: #4CAF50;
+            --primary-dark: #388E3C;
+            --primary-light: #C8E6C9;
+            --secondary: #2196F3;
+            --text: #333333;
+            --text-light: #757575;
+            --background: #FFFFFF;
+            --background-alt: #F5F5F5;
+            --border: #E0E0E0;
+            --error: #F44336;
+            --warning: #FF9800;
+            --success: #4CAF50;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--background);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .header-hidden {
+            transform: translateY(-100%);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo svg {
+            width: 40px;
+            height: 40px;
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--primary);
+        }
+
+        nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        /* Pages */
+        .page {
+            display: none;
+            min-height: 80vh;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .page.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 5rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23000' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.3;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease 0.4s both;
+        }
+
+        .hero-image {
+            max-width: 600px;
+            margin: 3rem auto 0;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 1s ease 0.6s both;
+        }
+
+        .hero-image img {
+            width: 100%;
+            display: block;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 5rem 0;
+            background-color: var(--background-alt);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--text);
+            animation: fadeIn 1s ease;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: all 0.3s;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .feature-card:nth-child(1) { animation-delay: 0.1s; }
+        .feature-card:nth-child(2) { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 5rem 0;
+        }
+
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .steps::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 10%;
+            width: 80%;
+            height: 2px;
+            background-color: var(--primary);
+            z-index: 1;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            flex: 1;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .step:nth-child(1) { animation-delay: 0.1s; }
+        .step:nth-child(2) { animation-delay: 0.3s; }
+        .step:nth-child(3) { animation-delay: 0.5s; }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0 auto 1.5rem;
+            transition: transform 0.3s;
+        }
+
+        .step:hover .step-number {
+            transform: scale(1.1);
+        }
+
+        .step h3 {
+            margin-bottom: 1rem;
+        }
+
+        /* Scan Page */
+        .scan-page {
+            padding: 3rem 0;
+        }
+
+        .scan-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .scan-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .scan-content {
+            padding: 2rem;
+        }
+
+        .scan-toggle {
+            display: flex;
+            margin-bottom: 2rem;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        .scan-option {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            background: var(--background-alt);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .scan-option.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .scan-form {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .scan-input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .scan-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+        }
+
+        .camera-container {
+            position: relative;
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        #camera-preview {
+            width: 100%;
+            border-radius: 10px;
+            background-color: #000;
+        }
+
+        .camera-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .scan-frame {
+            width: 70%;
+            height: 200px;
+            border: 3px solid var(--primary);
+            border-radius: 10px;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+        }
+
+        .camera-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .sample-barcodes {
+            background-color: var(--background-alt);
+            padding: 1.5rem;
+            border-radius: 10px;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .sample-barcodes h3 {
+            margin-bottom: 1rem;
+        }
+
+        .sample-barcodes ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .sample-barcodes li {
+            padding: 10px 15px;
+            background: white;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid var(--border);
+        }
+
+        .sample-barcodes li:hover {
+            background-color: var(--primary-light);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* Product Card */
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-top: 2rem;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .product-header {
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .product-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .product-header h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .nutri-score-section {
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nutri-score-large {
+            display: inline-block;
+            width: 100px;
+            height: 100px;
+            line-height: 100px;
+            border-radius: 50%;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: white;
+            margin: 1rem 0;
+            animation: pulse 2s infinite;
+        }
+
+        .nutri-score-a { background: #4CAF50; }
+        .nutri-score-b { background: #8BC34A; }
+        .nutri-score-c { background: #FFC107; }
+        .nutri-score-d { background: #FF9800; }
+        .nutri-score-e { background: #F44336; }
+
+        .score-description {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        .product-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .details-column h3 {
+            margin-bottom: 1rem;
+            color: var(--text);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 0.5rem;
+        }
+
+        .nutrients {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .nutrient {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid var(--border);
+            transition: background-color 0.3s;
+        }
+
+        .nutrient:hover {
+            background-color: var(--background-alt);
+            border-radius: 5px;
+            padding-left: 10px;
+        }
+
+        .health-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .health-section h4 {
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .health-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .health-section li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: padding-left 0.3s;
+        }
+
+        .health-section li:hover {
+            padding-left: 10px;
+        }
+
+        .benefits li { color: var(--success); }
+        .consequences li { color: var(--warning); }
+
+        .ingredients-text {
+            font-style: italic;
+            line-height: 1.4;
+            background-color: var(--background-alt);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        /* Auth Pages */
+        .auth-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+            padding: 2rem 0;
+        }
+
+        .auth-form {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .auth-form h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--text);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+        }
+
+        .auth-link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .auth-link a {
+            color: var(--primary);
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .auth-link a:hover {
+            color: var(--primary-dark);
+        }
+
+        /* Profile Page */
+        .profile-page {
+            padding: 3rem 0;
+        }
+
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .profile-info, .scan-history {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .history-item {
+            background: var(--background-alt);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s;
+            animation: fadeIn 0.6s ease;
+        }
+
+        .history-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.5rem;
+        }
+
+        .nutri-score {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .scan-date {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* Footer */
+        footer {
+            background-color: #2C3E50;
+            color: white;
+            padding: 4rem 0 2rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-column h3 {
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-column a {
+            color: #BDC3C7;
+            text-decoration: none;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        .footer-column a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #34495E;
+            padding-top: 2rem;
+            text-align: center;
+            color: #BDC3C7;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: scaleIn 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s;
+        }
+
+        .close-modal:hover {
+            color: var(--text);
+        }
+
+        .modal-body {
+            margin-bottom: 2rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        /* Info Pages */
+        .info-page {
+            padding: 3rem 0;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .info-content {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            max-width: 800px;
+            margin: 0 auto;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .info-content h1 {
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+
+        .info-content h2 {
+            margin: 2rem 0 1rem;
+            color: var(--text);
+        }
+
+        .info-content p {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        .info-content ul {
+            margin-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Loading Animation */
+        .loading-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--primary-light);
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        .loading-text {
+            font-size: 1.2rem;
+            color: var(--text);
+        }
+
+        /* Development Notice */
+        .development-notice {
+            background-color: #FFF3CD;
+            border: 1px solid #FFEAA7;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .development-notice h3 {
+            color: #856404;
+            margin-bottom: 0.5rem;
+        }
+
+        .development-notice p {
+            color: #856404;
+            margin-bottom: 0;
+        }
+
+        /* Social Links */
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            font-size: 1.5rem;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .social-link:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-3px);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Utility Classes */
+        .error-message {
+            background: #FFEBEE;
+            color: var(--error);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #FFCDD2;
+            margin: 1rem 0;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            font-size: 1.2rem;
+        }
+
+        .no-scans {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-light);
+            font-style: italic;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-4 {
+            margin-top: 2rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            nav {
+                gap: 1rem;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .steps {
+                flex-direction: column;
+                gap: 2rem;
+            }
+
+            .steps::before {
+                display: none;
+            }
+
+            .product-details {
+                grid-template-columns: 1fr;
+            }
+
+            .scan-form {
+                flex-direction: column;
+            }
+
+            .sample-barcodes ul {
+                flex-direction: column;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .history-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .camera-controls {
+                flex-direction: column;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Animation -->
+    <div class="loading-container" id="loading">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading...</div>
+    </div>
+
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo" onclick="showPage('home')">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M50,10 C70,10 85,25 85,45 C85,65 70,80 50,80 C30,80 15,65 15,45 C15,25 30,10 50,10 Z" fill="#4CAF50"/>
+                        <path d="M40,35 L60,35 L60,55 L40,55 Z" fill="white"/>
+                        <circle cx="40" cy="35" r="5" fill="white"/>
+                        <circle cx="60" cy="35" r="5" fill="white"/>
+                        <path d="M45,65 L55,65 L55,70 L45,70 Z" fill="white"/>
+                    </svg>
+                    Lynx
+                </a>
+                
+                <nav>
+                    <a href="#" onclick="showPage('home')" class="active">Home</a>
+                    <a href="#" onclick="showPage('scan')" id="nav-scan" style="display: none;">Scan</a>
+                    <a href="#" onclick="showPage('profile')" id="nav-profile" style="display: none;">Profile</a>
+                </nav>
+                
+                <div class="auth-buttons">
+                    <a href="#" onclick="showPage('login')" class="btn btn-outline" id="nav-login">Log in</a>
+                    <a href="#" onclick="showPage('register')" class="btn btn-primary" id="nav-register">Sign up free</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Home Page -->
+        <section id="home" class="page active">
+            <div class="hero">
+                <div class="container">
+                    <h1>Decipher Your Food in a Snap</h1>
+                    <p>Lynx analyzes your food products and tells you exactly what's inside. Make healthier choices with our simple scoring system.</p>
+                    <div class="hero-buttons">
+                        <a href="#" onclick="showPage('scan')" class="btn btn-primary" style="background: white; color: var(--primary);">Scan a product</a>
+                        <a href="#" onclick="showPage('register')" class="btn btn-outline" style="border-color: white; color: white;">Create an account</a>
+                    </div>
+                    <div class="hero-image">
+                        <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Person scanning food with smartphone">
+                    </div>
+                </div>
+            </div>
+
+            <section class="features">
+                <div class="container">
+                    <h2 class="section-title">Why Choose Lynx?</h2>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-barcode"></i>
+                            </div>
+                            <h3>Instant Analysis</h3>
+                            <p>Simply scan the barcode to get immediate information about the nutritional value and health impact of any food product.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-apple-alt"></i>
+                            </div>
+                            <h3>Clear Scoring</h3>
+                            <p>Our A to E rating system makes it easy to understand the healthiness of products at a glance.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-user-friends"></i>
+                            </div>
+                            <h3>Personalized</h3>
+                            <p>Create an account to track your scans, save favorite products, and get personalized recommendations.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="how-it-works">
+                <div class="container">
+                    <h2 class="section-title">How It Works</h2>
+                    <div class="steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <h3>Scan</h3>
+                            <p>Use your phone's camera to scan the barcode of any food product.</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <h3>Analyze</h3>
+                            <p>Lynx instantly analyzes the product's nutritional information.</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <h3>Understand</h3>
+                            <p>Get a clear health score and detailed breakdown of ingredients.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <!-- Login Page -->
+        <section id="login" class="page">
+            <div class="auth-page">
+                <div class="auth-form">
+                    <h1>Log in to Lynx</h1>
+                    
+                    <form id="login-form">
+                        <div class="form-group">
+                            <label for="login-email">Email</label>
+                            <input type="email" id="login-email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="login-password">Password</label>
+                            <input type="password" id="login-password" required>
+                        </div>
+
+                        <div id="login-error" class="error-message" style="display: none;"></div>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Log in</button>
+                    </form>
+
+                    <p class="auth-link">
+                        Don't have an account? <a onclick="showPage('register')">Sign up here</a>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Register Page -->
+        <section id="register" class="page">
+            <div class="auth-page">
+                <div class="auth-form">
+                    <h1>Join Lynx</h1>
+                    
+                    <form id="register-form">
+                        <div class="form-group">
+                            <label for="register-name">Full Name</label>
+                            <input type="text" id="register-name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="register-email">Email</label>
+                            <input type="email" id="register-email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="register-password">Password</label>
+                            <input type="password" id="register-password" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="register-confirm-password">Confirm Password</label>
+                            <input type="password" id="register-confirm-password" required>
+                        </div>
+
+                        <div id="register-error" class="error-message" style="display: none;"></div>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+                    </form>
+
+                    <p class="auth-link">
+                        Already have an account? <a onclick="showPage('login')">Log in here</a>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scan Page -->
+        <section id="scan" class="page">
+            <div class="scan-page">
+                <div class="container">
+                    <div class="scan-container">
+                        <div class="scan-header">
+                            <h1>Scan a Product</h1>
+                            <p>Use your camera or enter a barcode manually</p>
+                        </div>
+                        
+                        <div class="scan-content">
+                            <div class="scan-toggle">
+                                <div class="scan-option active" id="barcode-number-option" onclick="toggleScanOption('number')">
+                                    Barcode Number
+                                </div>
+                                <div class="scan-option" id="barcode-image-option" onclick="toggleScanOption('image')">
+                                    Barcode Image
+                                </div>
+                            </div>
+
+                            <div id="barcode-number-section">
+                                <form class="scan-form" id="scan-form">
+                                    <input type="text" id="barcode-input" class="scan-input" placeholder="Enter barcode number (e.g., 3017620422003)" required>
+                                    <button type="submit" class="btn btn-primary">Scan Product</button>
+                                </form>
+                            </div>
+
+                            <div class="camera-container" id="barcode-image-section">
+                                <video id="camera-preview"></video>
+                                <div class="camera-overlay">
+                                    <div class="scan-frame"></div>
+                                </div>
+                                <div class="camera-controls">
+                                    <button class="btn btn-primary" onclick="startCamera()">
+                                        <i class="fas fa-camera"></i> Start Camera
+                                    </button>
+                                    <button class="btn btn-outline" onclick="stopCamera()">
+                                        <i class="fas fa-stop"></i> Stop Camera
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="scan-error" class="error-message" style="display: none;"></div>
+
+                            <div class="sample-barcodes">
+                                <h3>Try these sample barcodes:</h3>
+                                <ul>
+                                    <li onclick="setBarcode('3017620422003')">Nutella - 3017620422003</li>
+                                    <li onclick="setBarcode('3175680011480')">Coca-Cola - 3175680011480</li>
+                                    <li onclick="setBarcode('7613034626844')">Nestlé Yogurt - 7613034626844</li>
+                                    <li onclick="setBarcode('5000159459221')">Heinz Ketchup - 5000159459221</li>
+                                </ul>
+                            </div>
+
+                            <div id="product-result">
+                                <!-- Product card will be inserted here by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profile Page -->
+        <section id="profile" class="page">
+            <div class="profile-page">
+                <div class="container">
+                    <div class="profile-header">
+                        <h1>My Profile</h1>
+                        <button onclick="logout()" class="btn btn-outline">Logout</button>
+                    </div>
+
+                    <div class="profile-info">
+                        <h2>Account Information</h2>
+                        <p><strong>Name:</strong> <span id="profile-name"></span></p>
+                        <p><strong>Email:</strong> <span id="profile-email"></span></p>
+                        <p><strong>Member since:</strong> <span id="profile-join-date"></span></p>
+                    </div>
+
+                    <div class="scan-history">
+                        <div class="history-header">
+                            <h2>Scan History</h2>
+                            <button onclick="showClearHistoryModal()" class="btn btn-outline" id="clear-history-btn" style="display: none;">Clear History</button>
+                        </div>
+
+                        <div id="no-scans-message" class="no-scans">
+                            No scans yet. Start scanning products to see your history here.
+                        </div>
+
+                        <div class="history-grid" id="scan-history-grid">
+                            <!-- Scan history will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Info Pages -->
+        <section id="about" class="page info-page">
+            <div class="container">
+                <div class="info-content">
+                    <h1>About Lynx</h1>
+                    <p>Lynx is a revolutionary food scanning application designed to help consumers make informed decisions about the food they eat. Our mission is to empower people with accurate, easy-to-understand information about the nutritional value of food products.</p>
+                    
+                    <h2>Our Story</h2>
+                    <p>Founded in 2025, Lynx was created by a team of nutritionists, food scientists, and technology experts who recognized the need for a simple tool that could decode complex food labels. We believe that everyone deserves to know exactly what they're putting into their bodies.</p>
+                    
+                    <h2>How We Work</h2>
+                    <p>Using advanced barcode scanning technology and a comprehensive database of food products, Lynx provides instant access to detailed nutritional information, ingredient analysis, and health impact assessments. Our unique scoring system makes it easy to compare products and make healthier choices.</p>
+                    
+                    <h2>Our Values</h2>
+                    <ul>
+                        <li><strong>Transparency:</strong> We believe in complete transparency about food ingredients and nutritional value.</li>
+                        <li><strong>Accuracy:</strong> Our database is constantly updated and verified by nutrition experts.</li>
+                        <li><strong>Accessibility:</strong> We strive to make nutritional information accessible to everyone.</li>
+                        <li><strong>Innovation:</strong> We continuously improve our technology to provide better insights.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="mission" class="page info-page">
+            <div class="container">
+                <div class="info-content">
+                    <h1>Our Mission</h1>
+                    <p>At Lynx, our mission is to empower individuals to make healthier food choices through transparent, accessible, and accurate nutritional information. We believe that knowledge is the first step toward better health, and we're committed to providing that knowledge in the most user-friendly way possible.</p>
+                    
+                    <h2>What We Stand For</h2>
+                    <p>We envision a world where everyone can easily understand what's in their food and how it affects their health. By decoding complex nutritional information into simple, actionable insights, we aim to:</p>
+                    
+                    <ul>
+                        <li>Reduce confusion around food labeling</li>
+                        <li>Help people identify healthier alternatives</li>
+                        <li>Promote transparency in the food industry</li>
+                        <li>Support individuals in achieving their health goals</li>
+                    </ul>
+                    
+                    <h2>Our Impact</h2>
+                    <p>Since our launch, Lynx has helped thousands of users make more informed food choices. Our users report increased awareness of nutritional content, better understanding of ingredient lists, and more confidence in selecting products that align with their health goals.</p>
+                    
+                    <p>We're proud to be part of the movement toward greater food transparency and healthier eating habits. Join us in our mission to create a healthier, more informed world—one scan at a time.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="press" class="page info-page">
+            <div class="container">
+                <div class="info-content">
+                    <h1>Press</h1>
+                    <p>Welcome to the Lynx press room. Here you'll find the latest news and information about our company.</p>
+                    
+                    <h2>Company Information</h2>
+                    <p>Lynx is a food scanning application that provides instant nutritional analysis of food products. Our technology helps consumers make informed decisions about the food they eat by decoding complex nutritional information into simple, easy-to-understand scores and insights.</p>
+                    
+                    <p><strong>Launched:</strong> November 2025</p>
+                    <p><strong>Founded:</strong> 2025</p>
+                    <p><strong>Headquarters:</strong> Melbourne, AU</p>
+                    <p><strong>CEO:</strong> Sean Kulathungage</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="careers" class="page info-page">
+            <div class="container">
+                <div class="info-content">
+                    <h1>Careers</h1>
+                    <div class="development-notice">
+                        <h3>Coming Soon</h3>
+                        <p>Our careers page is currently under development. Please check back later for opportunities to join the Lynx team.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="health-score" class="page info-page">
+            <div class="container">
+                <div class="info-content">
+                    <h1>Health Score Explained</h1>
+                    <p>Lynx uses a simple A to E rating system to help you quickly understand the nutritional quality of food products. Here's how our scoring system works:</p>
+                    
+                    <h2>How We Calculate Scores</h2>
+                    <p>Our health score is based on the Nutri-Score system, which evaluates products based on their nutritional value per 100g or 100ml. The score takes into account both positive and negative nutritional elements:</p>
+                    
+                    <h3>Positive Elements (Increase Score)</h3>
+                    <ul>
+                        <li>Protein content</li>
+                        <li>Fiber content</li>
+                        <li>Fruit, vegetable, and nut content</li>
+                        <li>Healthy oils (olive, canola, walnut)</li>
+                    </ul>
+                    
+                    <h3>Negative Elements (Decrease Score)</h3>
+                    <ul>
+                        <li>Energy (calorie) density</li>
+                        <li>Sugar content</li>
+                        <li>Saturated fat content</li>
+                        <li>Sodium (salt) content</li>
+                    </ul>
+                    
+                    <h2>Score Meanings</h2>
+                    <div style="display: flex; flex-direction: column; gap: 1rem; margin: 2rem 0;">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div class="nutri-score-large nutri-score-a" style="width: 60px; height: 60px; line-height: 60px; font-size: 1.5rem;">A</div>
+                            <div>
+                                <h3 style="margin: 0;">Excellent</h3>
+                                <p style="margin: 0;">Products with the best nutritional quality. These should form the basis of a healthy diet.</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div class="nutri-score-large nutri-score-b" style="width: 60px; height: 60px; line-height: 60px; font-size: 1.5rem;">B</div>
+                            <div>
+                                <h3 style="margin: 0;">Good</h3>
+                                <p style="margin: 0;">Nutritionally good products that can be consumed regularly.</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div class="nutri-score-large nutri-score-c" style="width: 60px; height: 60px; line-height: 60px; font-size: 1.5rem;">C</div>
+                            <div>
+                                <h3 style="margin: 0;">Average</h3>
+                                <p style="margin: 0;">Products with average nutritional quality. Should be consumed in moderation.</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div class="nutri-score-large nutri-score-d" style="width: 60px; height: 60px; line-height: 60px; font-size: 1.5rem;">D</div>
+                            <div>
+                                <h3 style="margin: 0;">Poor</h3>
+                                <p style="margin: 0;">Nutritionally poor products that should be consumed occasionally.</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div class="nutri-score-large nutri-score-e" style="width: 60px; height: 60px; line-height: 60px; font-size: 1.5rem;">E</div>
+                            <div>
+                                <h3 style="margin: 0;">Very Poor</h3>
+                                <p style="margin: 0;">Products with the worst nutritional quality. Should be consumed rarely.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h2>Using the Score</h2>
+                    <p>Our health score is designed to help you quickly compare similar products. For example, when choosing between different brands of cereal or yogurt, you can use the score to identify the healthier option.</p>
+                    
+                    <p>Remember that the score is just one tool to help you make informed decisions. It's also important to consider your overall diet, personal health needs, and enjoyment of food.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="product-database" class="page info-page">
+            <div class="container">
+                <div class="info-content">
+                    <h1>Product Database</h1>
+                    <div class="development-notice">
+                        <h3>Under Development</h3>
+                        <p>Our comprehensive product database is currently being expanded and improved. We're working hard to add more products and enhance our nutritional analysis capabilities.</p>
+                    </div>
+                    
+                    <h2>About Our Database</h2>
+                    <p>Lynx uses a comprehensive database of food products from around the world. Our database includes:</p>
+                    
+                    <ul>
+                        <li>Nutritional information for thousands of products</li>
+                        <li>Ingredient lists and allergen information</li>
+                        <li>Product images and descriptions</li>
+                        <li>Regular updates as new products enter the market</li>
+                    </ul>
+                    
+                    <h2>Coming Soon</h2>
+                    <p>We're continuously working to improve our database with:</p>
+                    
+                    <ul>
+                        <li>More international products</li>
+                        <li>Enhanced ingredient analysis</li>
+                        <li>Allergen alerts and dietary restriction information</li>
+                        <li>User-submitted product data</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="page info-page">
+            <div class="container">
+                <div class="info-content">
+                    <h1>Contact Us</h1>
+                    <p>We'd love to hear from you! Whether you have questions, feedback, or just want to say hello, don't hesitate to get in touch.</p>
+                    
+                    <h2>Get in Touch</h2>
+                    <p><strong>Email:</strong> sssean.kk@gmail.com</p>
+                    <p><strong>Address:</strong> Melbourne, Australia</p>
+                    
+                    <h2>Feedback & Support</h2>
+                    <p>If you're experiencing issues with the app or have suggestions for improvement, please use our feedback form:</p>
+                    
+                    <div class="text-center mt-4">
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSeu8lnGe0tYj5zX9lRNvPahoXb7QhAJzFLMzXmFEA1RhrmOLw/viewform?usp=sharing&ouid=106729985250333365535" target="_blank" class="btn btn-primary">
+                            <i class="fas fa-comment"></i> Submit Feedback
+                        </a>
+                    </div>
+                    
+                    <h2>Join Our Community</h2>
+                    <p>Connect with us on our social platforms:</p>
+                    
+                    <div class="social-links">
+                        <a href="https://discord.gg/HqNK9vzdxn" target="_blank" class="social-link">
+                            <i class="fab fa-discord"></i>
+                        </a>
+                        <a href="https://www.youtube.com/@OfficialLynxCrypto" target="_blank" class="social-link">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="faq" class="page info-page">
+            <div class="container">
+                <div class="info-content">
+                    <h1>Frequently Asked Questions</h1>
+                    
+                    <h2>How does Lynx work?</h2>
+                    <p>Lynx uses barcode scanning technology to identify food products. Once a product is identified, we analyze its nutritional information and provide a simple health score from A (excellent) to E (poor), along with detailed information about ingredients and nutritional content.</p>
+                    
+                    <h2>Is Lynx free to use?</h2>
+                    <p>Yes! Lynx is completely free to use. We believe that everyone should have access to transparent food information.</p>
+                    
+                    <h2>How accurate is the health scoring?</h2>
+                    <p>Our scoring system is based on established nutritional science and guidelines from health organizations. We continuously update our algorithms and database to ensure accuracy.</p>
+                    
+                    <h2>What if a product isn't in your database?</h2>
+                    <p>If you scan a product that isn't in our database, you can help us by submitting the product information. Our team will review and add it as quickly as possible.</p>
+                    
+                    <h2>Can I use Lynx outside the US?</h2>
+                    <p>Yes! Lynx works with products from around the world. Our database includes products from many countries, and we're constantly expanding our coverage.</p>
+                    
+                    <h2>How do you protect my data?</h2>
+                    <p>We take privacy seriously. Your personal information and scan history are stored securely and are never shared with third parties without your consent. For more details, please see our Privacy Policy.</p>
+                    
+                    <h2>How can I report an error?</h2>
+                    <p>If you find incorrect information for a product, please use our feedback form to let us know. We'll investigate and correct any errors as quickly as possible.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="privacy" class="page info-page">
+            <div class="container">
+                <div class="info-content">
+                    <h1>Privacy Policy</h1>
+                    <p><strong>Last updated: January 2025</strong></p>
+                    
+                    <h2>Introduction</h2>
+                    <p>At Lynx, we respect your privacy and are committed to protecting your personal data. This privacy policy will inform you about how we look after your personal data when you visit our website or use our application and tell you about your privacy rights and how the law protects you.</p>
+                    
+                    <h2>Data We Collect</h2>
+                    <p>We may collect, use, store and transfer different kinds of personal data about you which we have grouped together as follows:</p>
+                    
+                    <ul>
+                        <li><strong>Identity Data:</strong> includes first name, last name, username or similar identifier.</li>
+                        <li><strong>Contact Data:</strong> includes email address.</li>
+                        <li><strong>Technical Data:</strong> includes internet protocol (IP) address, your login data, browser type and version, time zone setting and location, browser plug-in types and versions, operating system and platform, and other technology on the devices you use to access this website.</li>
+                        <li><strong>Usage Data:</strong> includes information about how you use our website, products and services.</li>
+                        <li><strong>Scan Data:</strong> includes products you scan and your scan history.</li>
+                    </ul>
+                    
+                    <h2>How We Use Your Data</h2>
+                    <p>We will only use your personal data when the law allows us to. Most commonly, we will use your personal data in the following circumstances:</p>
+                    
+                    <ul>
+                        <li>To register you as a new customer</li>
+                        <li>To process and deliver your service requests</li>
+                        <li>To manage our relationship with you</li>
+                        <li>To enable you to participate in interactive features of our service</li>
+                        <li>To improve our website, products/services, marketing or customer relationships</li>
+                        <li>To recommend products or services which may be of interest to you</li>
+                    </ul>
+                    
+                    <h2>Data Security</h2>
+                    <p>We have put in place appropriate security measures to prevent your personal data from being accidentally lost, used or accessed in an unauthorized way, altered or disclosed. In addition, we limit access to your personal data to those employees, agents, contractors and other third parties who have a business need to know.</p>
+                    
+                    <h2>Data Retention</h2>
+                    <p>We will only retain your personal data for as long as reasonably necessary to fulfill the purposes we collected it for, including for the purposes of satisfying any legal, regulatory, tax, accounting or reporting requirements.</p>
+                    
+                    <h2>Your Legal Rights</h2>
+                    <p>Under certain circumstances, you have rights under data protection laws in relation to your personal data, including the right to request access, correction, erasure, restriction, transfer, or to withdraw consent.</p>
+                    
+                    <p>If you wish to exercise any of the rights set out above, please contact us at privacy@lynxapp.com.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Lynx</h3>
+                    <ul>
+                        <li><a onclick="showPage('about')">About Us</a></li>
+                        <li><a onclick="showPage('mission')">Our Mission</a></li>
+                        <li><a onclick="showPage('press')">Press</a></li>
+                        <li><a onclick="showPage('careers')">Careers</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Features</h3>
+                    <ul>
+                        <li><a onclick="showPage('scan')">Food Scanner</a></li>
+                        <li><a onclick="showPage('health-score')">Health Score</a></li>
+                        <li><a onclick="showPage('product-database')">Product Database</a></li>
+                        <li><a onclick="showPage('profile')">Personal Account</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Support</h3>
+                    <ul>
+                        <li><a onclick="showPage('faq')">Help Center & FAQ</a></li>
+                        <li><a onclick="showPage('contact')">Contact Us</a></li>
+                        <li><a onclick="showPage('privacy')">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Lynx. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Clear History Modal -->
+    <div class="modal" id="clear-history-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Clear Scan History</h3>
+                <button class="close-modal" onclick="closeModal('clear-history-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to clear your entire scan history? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('clear-history-modal')">Cancel</button>
+                <button class="btn btn-primary" onclick="clearScanHistory()">Clear History</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // User Authentication System
+        class AuthSystem {
+            constructor() {
+                this.currentUser = null;
+                this.users = JSON.parse(localStorage.getItem('lynxUsers')) || [];
+                this.init();
+            }
+
+            init() {
+                // Check if user is logged in
+                const loggedInUser = localStorage.getItem('lynxCurrentUser');
+                if (loggedInUser) {
+                    this.currentUser = JSON.parse(loggedInUser);
+                    this.updateUIForLoggedInUser();
+                } else {
+                    this.updateUIForLoggedOutUser();
+                }
+            }
+
+            register(name, email, password) {
+                // Check if user already exists
+                if (this.users.find(user => user.email === email)) {
+                    return { success: false, message: 'User already exists with this email' };
+                }
+
+                // Create new user
+                const newUser = {
+                    id: this.generateId(),
+                    name,
+                    email,
+                    password, // In a real app, this should be hashed
+                    createdAt: new Date().toISOString()
+                };
+
+                this.users.push(newUser);
+                localStorage.setItem('lynxUsers', JSON.stringify(this.users));
+
+                // Log the user in
+                this.login(email, password);
+
+                return { success: true };
+            }
+
+            login(email, password) {
+                const user = this.users.find(u => u.email === email && u.password === password);
+                
+                if (user) {
+                    this.currentUser = user;
+                    localStorage.setItem('lynxCurrentUser', JSON.stringify(user));
+                    this.updateUIForLoggedInUser();
+                    return { success: true };
+                } else {
+                    return { success: false, message: 'Invalid email or password' };
+                }
+            }
+
+            logout() {
+                this.currentUser = null;
+                localStorage.removeItem('lynxCurrentUser');
+                this.updateUIForLoggedOutUser();
+                showPage('home');
+            }
+
+            updateUIForLoggedInUser() {
+                // Update navigation
+                document.getElementById('nav-scan').style.display = 'inline-block';
+                document.getElementById('nav-profile').style.display = 'inline-block';
+                document.getElementById('nav-login').style.display = 'none';
+                document.getElementById('nav-register').style.display = 'none';
+
+                // Update profile page
+                if (document.getElementById('profile-name')) {
+                    document.getElementById('profile-name').textContent = this.currentUser.name;
+                    document.getElementById('profile-email').textContent = this.currentUser.email;
+                    document.getElementById('profile-join-date').textContent = new Date(this.currentUser.createdAt).toLocaleDateString();
+                    this.loadUserScanHistory();
+                }
+            }
+
+            updateUIForLoggedOutUser() {
+                // Update navigation
+                document.getElementById('nav-scan').style.display = 'none';
+                document.getElementById('nav-profile').style.display = 'none';
+                document.getElementById('nav-login').style.display = 'inline-block';
+                document.getElementById('nav-register').style.display = 'inline-block';
+            }
+
+            loadUserScanHistory() {
+                if (!this.currentUser) return;
+
+                const scans = this.getUserScans();
+                const historyGrid = document.getElementById('scan-history-grid');
+                const noScansMessage = document.getElementById('no-scans-message');
+                const clearHistoryBtn = document.getElementById('clear-history-btn');
+
+                if (scans.length > 0) {
+                    noScansMessage.style.display = 'none';
+                    clearHistoryBtn.style.display = 'block';
+                    historyGrid.innerHTML = '';
+
+                    scans.forEach((product, index) => {
+                        const historyItem = document.createElement('div');
+                        historyItem.className = 'history-item';
+                        historyItem.innerHTML = `
+                            <h3>${product.product_name || 'Unknown Product'}</h3>
+                            <div class="product-meta">
+                                ${product.nutri_score ? `<div class="nutri-score nutri-score-${product.nutri_score}">${product.nutri_score.toUpperCase()}</div>` : ''}
+                                <span class="scan-date">${new Date(product.scan_date).toLocaleDateString()}</span>
+                            </div>
+                        `;
+                        historyGrid.appendChild(historyItem);
+                    });
+                } else {
+                    noScansMessage.style.display = 'block';
+                    clearHistoryBtn.style.display = 'none';
+                    historyGrid.innerHTML = '';
+                }
+            }
+
+            addUserScan(product) {
+                if (!this.currentUser) return;
+
+                const scans = this.getUserScans();
+                product.scan_date = new Date().toISOString();
+                scans.unshift(product);
+                
+                // Keep only the last 50 scans
+                if (scans.length > 50) scans.length = 50;
+                
+                localStorage.setItem(`scans_${this.currentUser.id}`, JSON.stringify(scans));
+                
+                // Update UI
+                if (document.getElementById('profile').classList.contains('active')) {
+                    this.loadUserScanHistory();
+                }
+            }
+
+            getUserScans() {
+                if (!this.currentUser) return [];
+                return JSON.parse(localStorage.getItem(`scans_${this.currentUser.id}`)) || [];
+            }
+
+            clearUserScanHistory() {
+                if (!this.currentUser) return;
+                localStorage.removeItem(`scans_${this.currentUser.id}`);
+                this.loadUserScanHistory();
+                closeModal('clear-history-modal');
+            }
+
+            generateId() {
+                return 'user_' + Math.random().toString(36).substr(2, 9);
+            }
+        }
+
+        // Product Scanner System
+        class ProductScanner {
+            constructor(authSystem) {
+                this.authSystem = authSystem;
+                this.isScanning = false;
+                this.stream = null;
+            }
+
+            async scanBarcode(barcode) {
+                // Prevent multiple simultaneous scans
+                if (this.isScanning) {
+                    return { success: false, message: 'Scan already in progress' };
+                }
+
+                this.isScanning = true;
+                showLoading();
+                
+                try {
+                    // Fetch product data from Open Food Facts API
+                    const response = await fetch(`https://world.openfoodfacts.org/api/v2/product/${barcode}`);
+                    const data = await response.json();
+
+                    if (data.status === 1) {
+                        const product = data.product;
+                        
+                        // Format the product data
+                        const formattedProduct = {
+                            barcode: product.code,
+                            product_name: product.product_name,
+                            brands: product.brands,
+                            categories: product.categories,
+                            nutri_score: product.nutriscore_grade,
+                            nutriments: product.nutriments ? {
+                                energy: product.nutriments.energy,
+                                fat: product.nutriments.fat,
+                                saturated_fat: product.nutriments['saturated-fat'],
+                                sugars: product.nutriments.sugars,
+                                salt: product.nutriments.salt,
+                                fiber: product.nutriments.fiber,
+                                protein: product.nutriments.protein
+                            } : null,
+                            ingredients_text: product.ingredients_text,
+                            image_url: product.image_url,
+                            scan_date: new Date().toISOString()
+                        };
+
+                        // Add to user's scan history
+                        this.authSystem.addUserScan(formattedProduct);
+
+                        return { success: true, product: formattedProduct };
+                    } else {
+                        return { success: false, message: 'Product not found' };
+                    }
+                } catch (error) {
+                    console.error('Product API error:', error);
+                    return { success: false, message: 'Failed to fetch product information' };
+                } finally {
+                    this.isScanning = false;
+                    hideLoading();
+                }
+            }
+
+            getHealthBenefits(product) {
+                const benefits = [];
+                
+                if (!product.nutriments) return benefits;
+
+                // High fiber
+                if (product.nutriments.fiber > 3) {
+                    benefits.push('High in fiber, good for digestion');
+                }
+
+                // High protein
+                if (product.nutriments.protein > 10) {
+                    benefits.push('Good source of protein');
+                }
+
+                // Low sugar
+                if (product.nutriments.sugars < 5) {
+                    benefits.push('Low sugar content');
+                }
+
+                // Low saturated fat
+                if (product.nutriments.saturated_fat < 1.5) {
+                    benefits.push('Low in saturated fat');
+                }
+
+                // Low salt
+                if (product.nutriments.salt < 0.3) {
+                    benefits.push('Low salt content');
+                }
+
+                return benefits;
+            }
+
+            getHealthConsequences(product) {
+                const consequences = [];
+                
+                if (!product.nutriments) return consequences;
+
+                // High sugar
+                if (product.nutriments.sugars > 15) {
+                    consequences.push('High sugar content - may contribute to weight gain and diabetes risk');
+                }
+
+                // High saturated fat
+                if (product.nutriments.saturated_fat > 5) {
+                    consequences.push('High saturated fat - may increase heart disease risk');
+                }
+
+                // High salt
+                if (product.nutriments.salt > 1.5) {
+                    consequences.push('High salt content - may increase blood pressure');
+                }
+
+                // High energy density
+                if (product.nutriments.energy > 400) {
+                    consequences.push('High calorie density - consume in moderation for weight management');
+                }
+
+                // Low fiber
+                if (product.nutriments.fiber < 1) {
+                    consequences.push('Low fiber content - not ideal for digestive health');
+                }
+
+                return consequences;
+            }
+
+            displayProduct(product) {
+                const benefits = this.getHealthBenefits(product);
+                const consequences = this.getHealthConsequences(product);
+                
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                productCard.innerHTML = `
+                    <div class="product-header">
+                        <div class="product-image">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <div>
+                            <h2>${product.product_name || 'Product name not available'}</h2>
+                            ${product.brands ? `<p class="brand">Brand: ${product.brands}</p>` : ''}
+                        </div>
+                    </div>
+
+                    ${product.nutri_score ? `
+                    <div class="nutri-score-section">
+                        <h3>Health Rating</h3>
+                        <div class="nutri-score-large nutri-score-${product.nutri_score}">
+                            ${product.nutri_score.toUpperCase()}
+                        </div>
+                        <p class="score-description">
+                            ${product.nutri_score === 'a' ? 'Excellent - Very healthy choice' : ''}
+                            ${product.nutri_score === 'b' ? 'Good - Healthy choice' : ''}
+                            ${product.nutri_score === 'c' ? 'Average - Acceptable' : ''}
+                            ${product.nutri_score === 'd' ? 'Poor - Consume in moderation' : ''}
+                            ${product.nutri_score === 'e' ? 'Very Poor - Avoid frequent consumption' : ''}
+                        </p>
+                    </div>
+                    ` : ''}
+
+                    <div class="product-details">
+                        <div class="details-column">
+                            <h3>Nutritional Information</h3>
+                            ${product.nutriments ? `
+                            <div class="nutrients">
+                                <div class="nutrient">
+                                    <span>Energy</span>
+                                    <span>${product.nutriments.energy || 'N/A'} kcal</span>
+                                </div>
+                                <div class="nutrient">
+                                    <span>Fat</span>
+                                    <span>${product.nutriments.fat || 'N/A'}g</span>
+                                </div>
+                                <div class="nutrient">
+                                    <span>Saturated Fat</span>
+                                    <span>${product.nutriments.saturated_fat || 'N/A'}g</span>
+                                </div>
+                                <div class="nutrient">
+                                    <span>Sugars</span>
+                                    <span>${product.nutriments.sugars || 'N/A'}g</span>
+                                </div>
+                                <div class="nutrient">
+                                    <span>Salt</span>
+                                    <span>${product.nutriments.salt || 'N/A'}g</span>
+                                </div>
+                                <div class="nutrient">
+                                    <span>Fiber</span>
+                                    <span>${product.nutriments.fiber || 'N/A'}g</span>
+                                </div>
+                                <div class="nutrient">
+                                    <span>Protein</span>
+                                    <span>${product.nutriments.protein || 'N/A'}g</span>
+                                </div>
+                            </div>
+                            ` : '<p>Nutritional information not available</p>'}
+                        </div>
+
+                        <div class="details-column">
+                            <h3>Health Impact</h3>
+                            
+                            ${benefits.length > 0 ? `
+                            <div class="health-section benefits">
+                                <h4><i class="fas fa-check-circle"></i> Benefits</h4>
+                                <ul>
+                                    ${benefits.map(benefit => `<li><i class="fas fa-plus"></i> ${benefit}</li>`).join('')}
+                                </ul>
+                            </div>
+                            ` : ''}
+
+                            ${consequences.length > 0 ? `
+                            <div class="health-section consequences">
+                                <h4><i class="fas fa-exclamation-triangle"></i> Considerations</h4>
+                                <ul>
+                                    ${consequences.map(consequence => `<li><i class="fas fa-minus"></i> ${consequence}</li>`).join('')}
+                                </ul>
+                            </div>
+                            ` : ''}
+
+                            ${product.ingredients_text ? `
+                            <div class="health-section">
+                                <h4><i class="fas fa-list"></i> Ingredients</h4>
+                                <p class="ingredients-text">${product.ingredients_text}</p>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('product-result').innerHTML = '';
+                document.getElementById('product-result').appendChild(productCard);
+            }
+
+            // Camera scanning methods
+            async startCamera() {
+                try {
+                    this.stream = await navigator.mediaDevices.getUserMedia({ 
+                        video: { facingMode: 'environment' } 
+                    });
+                    
+                    const video = document.getElementById('camera-preview');
+                    video.srcObject = this.stream;
+                    
+                    // Initialize Quagga for barcode scanning
+                    Quagga.init({
+                        inputStream: {
+                            name: "Live",
+                            type: "LiveStream",
+                            target: video,
+                            constraints: {
+                                facingMode: "environment"
+                            }
+                        },
+                        decoder: {
+                            readers: ["ean_reader", "ean_8_reader", "code_128_reader"]
+                        }
+                    }, function(err) {
+                        if (err) {
+                            console.error(err);
+                            return;
+                        }
+                        Quagga.start();
+                    });
+                    
+                    Quagga.onDetected(this.onBarcodeDetected.bind(this));
+                    
+                } catch (error) {
+                    console.error('Error accessing camera:', error);
+                    document.getElementById('scan-error').textContent = 'Cannot access camera. Please check permissions.';
+                    document.getElementById('scan-error').style.display = 'block';
+                }
+            }
+
+            stopCamera() {
+                if (this.stream) {
+                    this.stream.getTracks().forEach(track => track.stop());
+                    this.stream = null;
+                }
+                
+                Quagga.stop();
+                
+                const video = document.getElementById('camera-preview');
+                video.srcObject = null;
+            }
+
+            onBarcodeDetected(result) {
+                const code = result.codeResult.code;
+                console.log('Barcode detected:', code);
+                
+                // Stop camera after detection
+                this.stopCamera();
+                
+                // Set the barcode value and trigger scan
+                document.getElementById('barcode-input').value = code;
+                document.getElementById('scan-form').dispatchEvent(new Event('submit'));
+            }
+        }
+
+        // Initialize the application
+        const authSystem = new AuthSystem();
+        const productScanner = new ProductScanner(authSystem);
+
+        // Loading functions
+        function showLoading() {
+            document.getElementById('loading').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        // Page Navigation
+        function showPage(pageId) {
+            showLoading();
+            
+            setTimeout(() => {
+                // Hide all pages
+                document.querySelectorAll('.page').forEach(page => {
+                    page.classList.remove('active');
+                });
+
+                // Show selected page
+                document.getElementById(pageId).classList.add('active');
+
+                // Update navigation active state
+                document.querySelectorAll('nav a').forEach(link => {
+                    link.classList.remove('active');
+                });
+
+                // Update active nav link for main navigation only
+                if (['home', 'scan', 'profile', 'login', 'register'].includes(pageId)) {
+                    const activeNavLink = document.querySelector(`nav a[onclick="showPage('${pageId}')"]`);
+                    if (activeNavLink) {
+                        activeNavLink.classList.add('active');
+                    }
+                }
+
+                // Load page-specific data
+                if (pageId === 'profile' && authSystem.currentUser) {
+                    authSystem.loadUserScanHistory();
+                } else if (pageId === 'scan') {
+                    // Reset scan form and results when navigating to scan page
+                    document.getElementById('scan-form').reset();
+                    document.getElementById('product-result').innerHTML = '';
+                    document.getElementById('scan-error').style.display = 'none';
+                    
+                    // Stop camera if it's running
+                    productScanner.stopCamera();
+                }
+                
+                hideLoading();
+            }, 500);
+        }
+
+        // Toggle between barcode number and image scanning
+        function toggleScanOption(option) {
+            const numberOption = document.getElementById('barcode-number-option');
+            const imageOption = document.getElementById('barcode-image-option');
+            const numberSection = document.getElementById('barcode-number-section');
+            const imageSection = document.getElementById('barcode-image-section');
+            
+            if (option === 'number') {
+                numberOption.classList.add('active');
+                imageOption.classList.remove('active');
+                numberSection.style.display = 'block';
+                imageSection.style.display = 'none';
+                
+                // Stop camera when switching to number input
+                productScanner.stopCamera();
+            } else {
+                numberOption.classList.remove('active');
+                imageOption.classList.add('active');
+                numberSection.style.display = 'none';
+                imageSection.style.display = 'block';
+            }
+        }
+
+        // Set barcode from sample list
+        function setBarcode(barcode) {
+            document.getElementById('barcode-input').value = barcode;
+            toggleScanOption('number');
+        }
+
+        // Start camera for barcode scanning
+        function startCamera() {
+            productScanner.startCamera();
+        }
+
+        // Stop camera
+        function stopCamera() {
+            productScanner.stopCamera();
+        }
+
+        // Modal functions
+        function showClearHistoryModal() {
+            document.getElementById('clear-history-modal').style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Logout function
+        function logout() {
+            authSystem.logout();
+        }
+
+        // Clear scan history
+        function clearScanHistory() {
+            authSystem.clearUserScanHistory();
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Login form
+            document.getElementById('login-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                const errorDiv = document.getElementById('login-error');
+                
+                const result = authSystem.login(email, password);
+                
+                if (result.success) {
+                    showPage('home');
+                } else {
+                    errorDiv.textContent = result.message;
+                    errorDiv.style.display = 'block';
+                }
+            });
+
+            // Register form
+            document.getElementById('register-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('register-name').value;
+                const email = document.getElementById('register-email').value;
+                const password = document.getElementById('register-password').value;
+                const confirmPassword = document.getElementById('register-confirm-password').value;
+                const errorDiv = document.getElementById('register-error');
+                
+                // Validation
+                if (password !== confirmPassword) {
+                    errorDiv.textContent = 'Passwords do not match';
+                    errorDiv.style.display = 'block';
+                    return;
+                }
+                
+                if (password.length < 6) {
+                    errorDiv.textContent = 'Password must be at least 6 characters long';
+                    errorDiv.style.display = 'block';
+                    return;
+                }
+                
+                const result = authSystem.register(name, email, password);
+                
+                if (result.success) {
+                    showPage('home');
+                } else {
+                    errorDiv.textContent = result.message;
+                    errorDiv.style.display = 'block';
+                }
+            });
+
+            // Scan form
+            document.getElementById('scan-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Check if user is logged in
+                if (!authSystem.currentUser) {
+                    showPage('login');
+                    return;
+                }
+                
+                const barcode = document.getElementById('barcode-input').value;
+                const errorDiv = document.getElementById('scan-error');
+                
+                if (!barcode.trim()) {
+                    errorDiv.textContent = 'Please enter a barcode';
+                    errorDiv.style.display = 'block';
+                    return;
+                }
+                
+                // Show loading state
+                const submitButton = this.querySelector('button[type="submit"]');
+                submitButton.disabled = true;
+                submitButton.textContent = 'Scanning...';
+                
+                errorDiv.style.display = 'none';
+                
+                const result = await productScanner.scanBarcode(barcode);
+                
+                if (result.success) {
+                    productScanner.displayProduct(result.product);
+                } else {
+                    errorDiv.textContent = result.message;
+                    errorDiv.style.display = 'block';
+                }
+                
+                // Reset button
+                submitButton.disabled = false;
+                submitButton.textContent = 'Scan Product';
+            });
+
+            // Hide header on scroll down, show on scroll up
+            let lastScrollTop = 0;
+            window.addEventListener('scroll', function() {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                if (scrollTop > lastScrollTop && scrollTop > 100) {
+                    document.querySelector('header').classList.add('header-hidden');
+                } else {
+                    document.querySelector('header').classList.remove('header-hidden');
+                }
+                lastScrollTop = scrollTop;
+            });
+        });
+    </script>
+</body>
+</html>
