@@ -363,26 +363,82 @@
             padding: 2rem;
         }
 
+        /* Enhanced Camera Interface */
+        .camera-header {
+            text-align: center;
+            padding: 1rem;
+            background: var(--background-alt);
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1rem;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .camera-header h3 {
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .camera-header p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .camera-wrapper {
+            position: relative;
+            margin: 1rem 0;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #000;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #camera-preview {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+        }
+
+        .scanning-text {
+            text-align: center;
+            color: white;
+            font-weight: 600;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+            padding: 0.5rem;
+            border-radius: 5px;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        /* Enhanced toggle buttons */
         .scan-toggle {
             display: flex;
             margin-bottom: 2rem;
-            border-radius: 10px;
+            border-radius: 15px;
             overflow: hidden;
             border: 2px solid var(--border);
+            background: var(--background-alt);
         }
 
         .scan-option {
             flex: 1;
             text-align: center;
             padding: 15px;
-            background: var(--background-alt);
+            background: transparent;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: none;
+            font-weight: 600;
+            color: var(--text-light);
         }
 
         .scan-option.active {
             background: var(--primary);
             color: white;
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
         }
 
         .scan-form {
@@ -410,12 +466,9 @@
             position: relative;
             margin-bottom: 2rem;
             display: none;
-        }
-
-        #camera-preview {
-            width: 100%;
             border-radius: 10px;
-            background-color: #000;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         .camera-overlay {
@@ -425,6 +478,7 @@
             width: 100%;
             height: 100%;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
         }
@@ -435,6 +489,26 @@
             border: 3px solid var(--primary);
             border-radius: 10px;
             box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Scan line animation */
+        .scan-animation {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            animation: scanLine 2s ease-in-out infinite;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        @keyframes scanLine {
+            0% { top: 0%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
         }
 
         .camera-controls {
@@ -442,6 +516,63 @@
             justify-content: center;
             gap: 1rem;
             margin-top: 1rem;
+        }
+
+        .scan-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scan-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(76, 175, 80, 0.3);
+        }
+
+        .scan-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .scan-btn:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* Success animation */
+        @keyframes successPulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(76, 175, 80, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+        }
+
+        .scan-success {
+            animation: successPulse 1s ease;
+        }
+
+        /* Loading animation for scanning */
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        .scanning {
+            animation: pulse 1.5s ease-in-out infinite;
         }
 
         .sample-barcodes {
@@ -510,6 +641,11 @@
         .product-header h2 {
             font-size: 1.8rem;
             margin-bottom: 0.5rem;
+            color: #333; /* Fixed: Changed from white to dark for better contrast */
+        }
+
+        .brand, .product-meta {
+            color: #eee; /* Slightly darker than white for better readability */
         }
 
         .nutri-score-section {
@@ -1310,18 +1446,27 @@
                             <div id="barcode-number-section">
                                 <form class="scan-form" id="scan-form">
                                     <input type="text" id="barcode-input" class="scan-input" placeholder="Enter barcode number (e.g., 3017620422003)" required>
-                                    <button type="submit" class="btn btn-primary">Scan Product</button>
+                                    <button type="submit" class="btn btn-primary scan-btn">Scan Product</button>
                                 </form>
                             </div>
 
                             <div class="camera-container" id="barcode-image-section">
-                                <video id="camera-preview"></video>
-                                <div class="camera-overlay">
-                                    <div class="scan-frame"></div>
+                                <div class="camera-header">
+                                    <h3><i class="fas fa-camera"></i> Camera Scanner</h3>
+                                    <p>Point your camera at a barcode to scan automatically</p>
+                                </div>
+                                <div class="camera-wrapper">
+                                    <video id="camera-preview" autoplay playsinline></video>
+                                    <div class="camera-overlay">
+                                        <div class="scan-frame">
+                                            <div class="scan-animation"></div>
+                                        </div>
+                                        <div class="scanning-text" id="scanning-text">Align barcode within frame</div>
+                                    </div>
                                 </div>
                                 <div class="camera-controls">
-                                    <button class="btn btn-primary" onclick="startCamera()">
-                                        <i class="fas fa-camera"></i> Start Camera
+                                    <button class="btn btn-primary scan-btn" onclick="startCamera()">
+                                        <i class="fas fa-camera"></i> Start Scanner
                                     </button>
                                     <button class="btn btn-outline" onclick="stopCamera()">
                                         <i class="fas fa-stop"></i> Stop Camera
@@ -1883,17 +2028,17 @@
             }
         }
 
-        // Product Scanner System
+        // Enhanced ProductScanner class with fixed camera functionality
         class ProductScanner {
             constructor(authSystem) {
                 this.authSystem = authSystem;
                 this.isScanning = false;
                 this.stream = null;
                 this.quaggaInitialized = false;
+                this.scanTimeout = null;
             }
 
             async scanBarcode(barcode) {
-                // Prevent multiple simultaneous scans
                 if (this.isScanning) {
                     return { success: false, message: 'Scan already in progress' };
                 }
@@ -1902,6 +2047,10 @@
                 showLoading();
                 
                 try {
+                    // Update scanning text
+                    const scanningText = document.getElementById('scanning-text');
+                    if (scanningText) scanningText.textContent = 'Fetching product info...';
+                    
                     // Fetch product data from Open Food Facts API
                     const response = await fetch(`https://world.openfoodfacts.org/api/v2/product/${barcode}`);
                     const data = await response.json();
@@ -1933,6 +2082,13 @@
                         // Add to user's scan history
                         this.authSystem.addUserScan(formattedProduct);
 
+                        // Add success animation
+                        const scanFrame = document.querySelector('.scan-frame');
+                        if (scanFrame) {
+                            scanFrame.classList.add('scan-success');
+                            setTimeout(() => scanFrame.classList.remove('scan-success'), 1000);
+                        }
+
                         return { success: true, product: formattedProduct };
                     } else {
                         return { success: false, message: 'Product not found. Please try another barcode.' };
@@ -1943,7 +2099,146 @@
                 } finally {
                     this.isScanning = false;
                     hideLoading();
+                    const scanningText = document.getElementById('scanning-text');
+                    if (scanningText) scanningText.textContent = 'Align barcode within frame';
                 }
+            }
+
+            // Fixed camera scanning methods
+            async startCamera() {
+                try {
+                    // Stop camera if already running
+                    this.stopCamera();
+                    
+                    const video = document.getElementById('camera-preview');
+                    const scanningText = document.getElementById('scanning-text');
+                    
+                    // Update UI
+                    if (scanningText) scanningText.textContent = 'Starting camera...';
+                    
+                    this.stream = await navigator.mediaDevices.getUserMedia({ 
+                        video: { 
+                            facingMode: 'environment',
+                            width: { ideal: 1280 },
+                            height: { ideal: 720 }
+                        } 
+                    });
+                    
+                    video.srcObject = this.stream;
+                    
+                    // Initialize Quagga for barcode scanning
+                    await this.initializeQuagga();
+                    
+                    // Update UI
+                    if (scanningText) scanningText.textContent = 'Align barcode within frame';
+                    
+                } catch (error) {
+                    console.error('Error accessing camera:', error);
+                    this.showCameraError('Cannot access camera. Please check permissions and ensure you\'re using HTTPS.');
+                }
+            }
+
+            async initializeQuagga() {
+                return new Promise((resolve, reject) => {
+                    Quagga.init({
+                        inputStream: {
+                            name: "Live",
+                            type: "LiveStream",
+                            target: document.getElementById('camera-preview'),
+                            constraints: {
+                                facingMode: "environment",
+                                width: { min: 640, ideal: 1280, max: 1920 },
+                                height: { min: 480, ideal: 720, max: 1080 }
+                            }
+                        },
+                        decoder: {
+                            readers: [
+                                "ean_reader",
+                                "ean_8_reader", 
+                                "upc_reader",
+                                "upc_e_reader",
+                                "code_128_reader"
+                            ]
+                        },
+                        locator: {
+                            patchSize: "medium",
+                            halfSample: true
+                        },
+                        numOfWorkers: 2,
+                        frequency: 10,
+                        debug: {
+                            drawBoundingBox: true,
+                            showFrequency: false,
+                            drawScanline: true,
+                            showPattern: false
+                        }
+                    }, (err) => {
+                        if (err) {
+                            console.error('Quagga initialization error:', err);
+                            this.showCameraError('Failed to initialize barcode scanner.');
+                            reject(err);
+                            return;
+                        }
+                        
+                        Quagga.start();
+                        this.quaggaInitialized = true;
+                        
+                        // Set up detection handler
+                        Quagga.onDetected(this.onBarcodeDetected.bind(this));
+                        resolve();
+                    });
+                });
+            }
+
+            onBarcodeDetected(result) {
+                const code = result.codeResult.code;
+                console.log('Barcode detected:', code);
+                
+                // Update scanning text
+                const scanningText = document.getElementById('scanning-text');
+                if (scanningText) scanningText.textContent = 'Barcode detected! Processing...';
+                
+                // Stop camera after detection
+                this.stopCamera();
+                
+                // Set the barcode value and trigger scan
+                document.getElementById('barcode-input').value = code;
+                
+                // Submit the form after a brief delay to show feedback
+                setTimeout(() => {
+                    document.getElementById('scan-form').dispatchEvent(new Event('submit'));
+                }, 500);
+            }
+
+            stopCamera() {
+                if (this.stream) {
+                    this.stream.getTracks().forEach(track => track.stop());
+                    this.stream = null;
+                }
+                
+                if (this.quaggaInitialized) {
+                    Quagga.stop();
+                    this.quaggaInitialized = false;
+                }
+                
+                const video = document.getElementById('camera-preview');
+                if (video) {
+                    video.srcObject = null;
+                }
+                
+                const scanningText = document.getElementById('scanning-text');
+                if (scanningText) scanningText.textContent = 'Camera stopped';
+            }
+
+            showCameraError(message) {
+                const errorDiv = document.getElementById('scan-error');
+                if (errorDiv) {
+                    errorDiv.textContent = message;
+                    errorDiv.style.display = 'block';
+                }
+                
+                const scanningText = document.getElementById('scanning-text');
+                if (scanningText) scanningText.textContent = 'Camera error';
             }
 
             getHealthBenefits(product) {
@@ -2116,89 +2411,6 @@
 
                 document.getElementById('product-result').innerHTML = '';
                 document.getElementById('product-result').appendChild(productCard);
-            }
-
-            // Camera scanning methods
-            async startCamera() {
-                try {
-                    this.stream = await navigator.mediaDevices.getUserMedia({ 
-                        video: { facingMode: 'environment' } 
-                    });
-                    
-                    const video = document.getElementById('camera-preview');
-                    video.srcObject = this.stream;
-                    
-                    // Initialize Quagga for barcode scanning
-                    if (!this.quaggaInitialized) {
-                        await this.initializeQuagga();
-                        this.quaggaInitialized = true;
-                    } else {
-                        Quagga.start();
-                    }
-                    
-                } catch (error) {
-                    console.error('Error accessing camera:', error);
-                    document.getElementById('scan-error').textContent = 'Cannot access camera. Please check permissions.';
-                    document.getElementById('scan-error').style.display = 'block';
-                }
-            }
-
-            async initializeQuagga() {
-                return new Promise((resolve, reject) => {
-                    Quagga.init({
-                        inputStream: {
-                            name: "Live",
-                            type: "LiveStream",
-                            target: document.getElementById('camera-preview'),
-                            constraints: {
-                                facingMode: "environment"
-                            }
-                        },
-                        decoder: {
-                            readers: ["ean_reader", "ean_8_reader", "code_128_reader"]
-                        },
-                        locator: {
-                            patchSize: "medium",
-                            halfSample: true
-                        }
-                    }, function(err) {
-                        if (err) {
-                            console.error('Quagga initialization error:', err);
-                            reject(err);
-                            return;
-                        }
-                        Quagga.start();
-                        resolve();
-                    });
-                    
-                    Quagga.onDetected(this.onBarcodeDetected.bind(this));
-                });
-            }
-
-            stopCamera() {
-                if (this.stream) {
-                    this.stream.getTracks().forEach(track => track.stop());
-                    this.stream = null;
-                }
-                
-                if (this.quaggaInitialized) {
-                    Quagga.stop();
-                }
-                
-                const video = document.getElementById('camera-preview');
-                video.srcObject = null;
-            }
-
-            onBarcodeDetected(result) {
-                const code = result.codeResult.code;
-                console.log('Barcode detected:', code);
-                
-                // Stop camera after detection
-                this.stopCamera();
-                
-                // Set the barcode value and trigger scan
-                document.getElementById('barcode-input').value = code;
-                document.getElementById('scan-form').dispatchEvent(new Event('submit'));
             }
         }
 
