@@ -11,7 +11,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
         }
 
         :root {
@@ -19,21 +19,25 @@
             --primary-dark: #388E3C;
             --primary-light: #C8E6C9;
             --secondary: #2196F3;
-            --text: #333333;
-            --text-light: #757575;
-            --background: #FFFFFF;
-            --background-alt: #F5F5F5;
-            --border: #E0E0E0;
-            --error: #F44336;
-            --warning: #FF9800;
-            --success: #4CAF50;
+            --text: #1D1D1F;
+            --text-light: #86868B;
+            --background: #FBFBFD;
+            --background-alt: #F5F5F7;
+            --border: #D2D2D7;
+            --error: #FF3B30;
+            --warning: #FF9500;
+            --success: #34C759;
+            --glass-bg: rgba(255, 255, 255, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         body {
-            background-color: var(--background);
+            background: linear-gradient(135deg, #FBFBFD 0%, #F5F5F7 100%);
             color: var(--text);
             line-height: 1.6;
             overflow-x: hidden;
+            min-height: 100vh;
         }
 
         .container {
@@ -42,10 +46,12 @@
             padding: 0 20px;
         }
 
-        /* Header */
+        /* Header with Glass Effect */
         header {
-            background-color: var(--background);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid var(--glass-border);
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -95,6 +101,7 @@
             font-weight: 500;
             transition: all 0.3s;
             position: relative;
+            padding: 8px 0;
         }
 
         nav a:hover, nav a.active {
@@ -104,7 +111,7 @@
         nav a.active::after {
             content: '';
             position: absolute;
-            bottom: -5px;
+            bottom: 0;
             left: 0;
             width: 100%;
             height: 2px;
@@ -117,8 +124,8 @@
         }
 
         .btn {
-            padding: 10px 20px;
-            border-radius: 50px;
+            padding: 12px 24px;
+            border-radius: 12px;
             font-weight: 600;
             text-decoration: none;
             transition: all 0.3s;
@@ -127,17 +134,18 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            font-size: 0.95rem;
         }
 
         .btn-primary {
-            background-color: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
+            box-shadow: 0 4px 14px rgba(76, 175, 80, 0.3);
         }
 
         .btn-primary:hover {
-            background-color: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
         }
 
         .btn-outline {
@@ -149,6 +157,16 @@
         .btn-outline:hover {
             background-color: var(--primary-light);
             transform: translateY(-2px);
+        }
+
+        /* Glass Effect Cards */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--glass-shadow);
         }
 
         /* Pages */
@@ -166,11 +184,11 @@
             transform: translateY(0);
         }
 
-        /* Hero Section */
+        /* Hero Section with Liquid Glass */
         .hero {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.9) 0%, rgba(56, 142, 60, 0.9) 100%);
             color: white;
-            padding: 5rem 0;
+            padding: 6rem 0;
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -187,9 +205,14 @@
             opacity: 0.3;
         }
 
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
         .hero h1 {
             font-size: 3.5rem;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             font-weight: 700;
             animation: fadeInUp 1s ease;
         }
@@ -197,7 +220,7 @@
         .hero p {
             font-size: 1.3rem;
             max-width: 700px;
-            margin: 0 auto 2rem;
+            margin: 0 auto 2.5rem;
             opacity: 0.9;
             animation: fadeInUp 1s ease 0.2s both;
         }
@@ -213,7 +236,7 @@
         .hero-image {
             max-width: 600px;
             margin: 3rem auto 0;
-            border-radius: 15px;
+            border-radius: 20px;
             overflow: hidden;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             animation: fadeIn 1s ease 0.6s both;
@@ -226,8 +249,8 @@
 
         /* Features Section */
         .features {
-            padding: 5rem 0;
-            background-color: var(--background-alt);
+            padding: 6rem 0;
+            background-color: var(--background);
         }
 
         .section-title {
@@ -245,10 +268,13 @@
         }
 
         .feature-card {
-            background: white;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--glass-shadow);
             padding: 2.5rem;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
             text-align: center;
             transition: all 0.3s;
             opacity: 0;
@@ -262,7 +288,7 @@
 
         .feature-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
         }
 
         .feature-icon {
@@ -278,7 +304,8 @@
 
         /* How It Works */
         .how-it-works {
-            padding: 5rem 0;
+            padding: 6rem 0;
+            background-color: var(--background-alt);
         }
 
         .steps {
@@ -317,7 +344,7 @@
         .step-number {
             width: 80px;
             height: 80px;
-            background-color: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
             border-radius: 50%;
             display: flex;
@@ -327,6 +354,7 @@
             font-weight: bold;
             margin: 0 auto 1.5rem;
             transition: transform 0.3s;
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
         }
 
         .step:hover .step-number {
@@ -339,21 +367,24 @@
 
         /* Scan Page */
         .scan-page {
-            padding: 2rem 0;
+            padding: 3rem 0;
         }
 
         .scan-container {
             max-width: 800px;
             margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--glass-shadow);
             overflow: hidden;
             animation: fadeIn 0.8s ease;
         }
 
         .scan-header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.9) 0%, rgba(56, 142, 60, 0.9) 100%);
             color: white;
             padding: 2rem;
             text-align: center;
@@ -451,9 +482,10 @@
             flex: 1;
             padding: 15px;
             border: 2px solid var(--border);
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 1rem;
             transition: all 0.3s;
+            background: var(--glass-bg);
         }
 
         .scan-input:focus {
@@ -524,7 +556,7 @@
             border: none;
             color: white;
             padding: 12px 24px;
-            border-radius: 50px;
+            border-radius: 12px;
             font-weight: 600;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
@@ -579,7 +611,7 @@
         .sample-barcodes {
             background-color: var(--background-alt);
             padding: 1.5rem;
-            border-radius: 10px;
+            border-radius: 12px;
             animation: fadeIn 0.8s ease;
         }
 
@@ -596,8 +628,8 @@
 
         .sample-barcodes li {
             padding: 10px 15px;
-            background: white;
-            border-radius: 50px;
+            background: var(--glass-bg);
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s;
             border: 1px solid var(--border);
@@ -613,9 +645,12 @@
 
         /* Product Card */
         .product-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--glass-shadow);
             overflow: hidden;
             margin-top: 2rem;
             animation: fadeIn 0.8s ease;
@@ -623,7 +658,7 @@
 
         .product-header {
             padding: 2rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
             color: white;
             display: flex;
             align-items: center;
@@ -633,13 +668,20 @@
         .product-image {
             width: 100px;
             height: 100px;
-            border-radius: 10px;
+            border-radius: 12px;
             background-color: white;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 2rem;
             flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .product-header h2 {
@@ -659,10 +701,11 @@
         }
 
         .nutri-score-large {
-            display: inline-block;
+            display: inline-flex;
             width: 100px;
             height: 100px;
-            line-height: 100px;
+            align-items: center;
+            justify-content: center;
             border-radius: 50%;
             font-size: 2.5rem;
             font-weight: bold;
@@ -681,6 +724,13 @@
             font-size: 1.2rem;
             font-weight: 600;
             margin-top: 1rem;
+            color: var(--text);
+        }
+
+        .numeric-score {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
             color: var(--text);
         }
 
@@ -757,6 +807,145 @@
             color: var(--text);
         }
 
+        /* AI Analysis Section */
+        .ai-analysis {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .ai-analysis h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .ai-analysis-content {
+            line-height: 1.6;
+        }
+
+        .ai-loading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-light);
+        }
+
+        .ai-loading .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-top: 2px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Review Section */
+        .review-section {
+            padding: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .review-section h3 {
+            margin-bottom: 1.5rem;
+            color: var(--text);
+        }
+
+        .review-form {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .review-form h4 {
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .rating-input {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .rating-star {
+            font-size: 1.5rem;
+            color: var(--border);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .rating-star.active, .rating-star:hover {
+            color: #FFC107;
+        }
+
+        .review-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+            background: var(--glass-bg);
+        }
+
+        .review-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .review-item {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .reviewer-name {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .review-date {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .review-rating {
+            color: #FFC107;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .review-text {
+            line-height: 1.5;
+        }
+
         /* Auth Pages */
         .auth-page {
             display: flex;
@@ -767,10 +956,13 @@
         }
 
         .auth-form {
-            background: white;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--glass-shadow);
             padding: 3rem;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             width: 100%;
             max-width: 450px;
             animation: fadeInUp 0.8s ease;
@@ -797,9 +989,10 @@
             width: 100%;
             padding: 15px;
             border: 2px solid var(--border);
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 1rem;
             transition: all 0.3s;
+            background: var(--glass-bg);
         }
 
         .form-group input:focus {
@@ -839,10 +1032,13 @@
         }
 
         .profile-info, .scan-history {
-            background: white;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--glass-shadow);
             padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
             margin-bottom: 2rem;
             animation: fadeInUp 0.8s ease;
         }
@@ -863,7 +1059,7 @@
         .history-item {
             background: var(--background-alt);
             padding: 1.5rem;
-            border-radius: 10px;
+            border-radius: 12px;
             border-left: 4px solid var(--primary);
             transition: all 0.3s;
             animation: fadeIn 0.6s ease;
@@ -893,6 +1089,27 @@
         .scan-date {
             font-size: 0.9rem;
             color: var(--text-light);
+        }
+
+        /* Reviews Page */
+        .reviews-page {
+            padding: 3rem 0;
+        }
+
+        .reviews-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .reviews-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .reviews-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
         }
 
         /* Footer */
@@ -956,12 +1173,15 @@
         }
 
         .modal-content {
-            background: white;
-            border-radius: 15px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--glass-shadow);
             padding: 2rem;
             max-width: 500px;
             width: 90%;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             animation: scaleIn 0.3s ease;
         }
 
@@ -1000,6 +1220,17 @@
             gap: 1rem;
         }
 
+        /* Custom Confirmation Modal */
+        .confirmation-modal {
+            text-align: center;
+        }
+
+        .confirmation-icon {
+            font-size: 4rem;
+            color: var(--success);
+            margin-bottom: 1rem;
+        }
+
         /* Info Pages */
         .info-page {
             padding: 3rem 0;
@@ -1007,10 +1238,13 @@
         }
 
         .info-content {
-            background: white;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--glass-shadow);
             padding: 3rem;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
             max-width: 800px;
             margin: 0 auto;
             animation: fadeInUp 0.8s ease;
@@ -1384,6 +1618,7 @@
                     <a href="#" onclick="showPage('home')" class="active">Home</a>
                     <a href="#" onclick="showPage('scan')" id="nav-scan" style="display: none;">Scan</a>
                     <a href="#" onclick="showPage('profile')" id="nav-profile" style="display: none;">Profile</a>
+                    <a href="#" onclick="showPage('reviews')" id="nav-reviews">Reviews</a>
                 </nav>
                 
                 <div class="auth-buttons">
@@ -1399,11 +1634,13 @@
         <section id="home" class="page active">
             <div class="hero">
                 <div class="container">
-                    <h1>Decipher Your Food in a Snap</h1>
-                    <p>Lynx analyzes your food products and tells you exactly what's inside. Make healthier choices with our simple scoring system.</p>
-                    <div class="hero-buttons">
-                        <a href="#" onclick="showPage('scan')" class="btn btn-primary" style="background: white; color: var(--primary);">Scan a product</a>
-                        <a href="#" onclick="showPage('register')" class="btn btn-outline" style="border-color: white; color: white;">Create an account</a>
+                    <div class="hero-content">
+                        <h1>Decipher Your Food in a Snap</h1>
+                        <p>Lynx analyzes your food products and tells you exactly what's inside. Make healthier choices with our simple scoring system.</p>
+                        <div class="hero-buttons">
+                            <a href="#" onclick="showPage('scan')" class="btn btn-primary" style="background: white; color: var(--primary);">Scan a product</a>
+                            <a href="#" onclick="showPage('register')" class="btn btn-outline" style="border-color: white; color: white;">Create an account</a>
+                        </div>
                     </div>
                     <div class="hero-image">
                         <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Person scanning food with smartphone">
@@ -1458,6 +1695,36 @@
                             <div class="step-number">3</div>
                             <h3>Understand</h3>
                             <p>Get a clear health score and detailed breakdown of ingredients.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Additional Images Section -->
+            <section class="features" style="background-color: var(--background-alt);">
+                <div class="container">
+                    <h2 class="section-title">Make Healthier Choices</h2>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <div class="hero-image">
+                                <img src="https://images.unsplash.com/photo-1576402187878-974f70c890a5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="Healthy food selection">
+                            </div>
+                            <h3>Quality Ingredients</h3>
+                            <p>Identify products with high-quality ingredients and avoid harmful additives.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="hero-image">
+                                <img src="https://images.unsplash.com/photo-1490818387583-1baba5e638af?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="Nutritional information">
+                            </div>
+                            <h3>Nutritional Insights</h3>
+                            <p>Get detailed breakdowns of calories, macronutrients, and micronutrients.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="hero-image">
+                                <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="Family eating healthy">
+                            </div>
+                            <h3>Family Health</h3>
+                            <p>Make better choices for your family with our easy-to-understand scoring system.</p>
                         </div>
                     </div>
                 </div>
@@ -1640,6 +1907,36 @@
             </div>
         </section>
 
+        <!-- Reviews Page -->
+        <section id="reviews" class="page reviews-page">
+            <div class="container">
+                <div class="reviews-header">
+                    <h1>Product Reviews</h1>
+                    <p>See what other users think about products they've scanned</p>
+                </div>
+                
+                <div class="reviews-container">
+                    <div class="review-form">
+                        <h4>Submit a Review</h4>
+                        <div class="rating-input">
+                            <span class="rating-star" data-rating="1">★</span>
+                            <span class="rating-star" data-rating="2">★</span>
+                            <span class="rating-star" data-rating="3">★</span>
+                            <span class="rating-star" data-rating="4">★</span>
+                            <span class="rating-star" data-rating="5">★</span>
+                        </div>
+                        <input type="text" id="review-product" class="scan-input" placeholder="Product name">
+                        <textarea id="review-text" class="review-input" placeholder="Write your review here..."></textarea>
+                        <button class="btn btn-primary" onclick="submitReview()">Submit Review</button>
+                    </div>
+                    
+                    <div class="reviews-list" id="reviews-list">
+                        <!-- Reviews will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Info Pages -->
         <section id="about" class="page info-page">
             <div class="container">
@@ -1701,6 +1998,9 @@
                     <p><strong>Founded:</strong> 2025</p>
                     <p><strong>Headquarters:</strong> Melbourne, AU</p>
                     <p><strong>CEO:</strong> Sean Kulathungage</p>
+                    
+                    <h2>Media Inquiries</h2>
+                    <p>For media inquiries, please contact us at <strong>sssean.kk@gmail.com</strong></p>
                 </div>
             </div>
         </section>
@@ -1709,10 +2009,22 @@
             <div class="container">
                 <div class="info-content">
                     <h1>Careers</h1>
+                    <p>Join our mission to revolutionize the way people think about food and nutrition. At Lynx, we're building a future where everyone has access to transparent, accurate food information.</p>
+                    
+                    <h2>Current Openings</h2>
                     <div class="development-notice">
                         <h3>Coming Soon</h3>
-                        <p>Our careers page is currently under development. Please check back later for opportunities to join the Lynx team.</p>
+                        <p>We're growing quickly and will be posting job openings here soon. Check back later for opportunities to join the Lynx team.</p>
                     </div>
+                    
+                    <h2>Why Work at Lynx?</h2>
+                    <ul>
+                        <li>Make a meaningful impact on public health</li>
+                        <li>Work with cutting-edge technology</li>
+                        <li>Collaborative and inclusive work environment</li>
+                        <li>Competitive compensation and benefits</li>
+                        <li>Flexible work arrangements</li>
+                    </ul>
                 </div>
             </div>
         </section>
@@ -1745,35 +2057,35 @@
                     <h2>Score Meanings</h2>
                     <div style="display: flex; flex-direction: column; gap: 1rem; margin: 2rem 0;">
                         <div style="display: flex; align-items: center; gap: 1rem;">
-                            <div class="nutri-score-large nutri-score-a" style="width: 60px; height: 60px; line-height: 60px; font-size: 1.5rem;">A</div>
+                            <div class="nutri-score-large nutri-score-a" style="width: 60px; height: 60px; line-height: 60px; font-size: 1.5rem; display: flex; align-items: center; justify-content: center;">A</div>
                             <div>
                                 <h3 style="margin: 0;">Excellent</h3>
                                 <p style="margin: 0;">Products with the best nutritional quality. These should form the basis of a healthy diet.</p>
                             </div>
                         </div>
                         <div style="display: flex; align-items: center; gap: 1rem;">
-                            <div class="nutri-score-large nutri-score-b" style="width: 60px; height: 60px; line-height: 60px; font-size: 1.5rem;">B</div>
+                            <div class="nutri-score-large nutri-score-b" style="width: 60px; height: 60px; line-height: 60px; font-size: 1.5rem; display: flex; align-items: center; justify-content: center;">B</div>
                             <div>
                                 <h3 style="margin: 0;">Good</h3>
                                 <p style="margin: 0;">Nutritionally good products that can be consumed regularly.</p>
                             </div>
                         </div>
                         <div style="display: flex; align-items: center; gap: 1rem;">
-                            <div class="nutri-score-large nutri-score-c" style="width: 60px; height: 60px; line-height: 60px; font-size: 1.5rem;">C</div>
+                            <div class="nutri-score-large nutri-score-c" style="width: 60px; height: 60px; line-height: 60px; font-size: 1.5rem; display: flex; align-items: center; justify-content: center;">C</div>
                             <div>
                                 <h3 style="margin: 0;">Average</h3>
                                 <p style="margin: 0;">Products with average nutritional quality. Should be consumed in moderation.</p>
                             </div>
                         </div>
                         <div style="display: flex; align-items: center; gap: 1rem;">
-                            <div class="nutri-score-large nutri-score-d" style="width: 60px; height: 60px; line-height: 60px; font-size: 1.5rem;">D</div>
+                            <div class="nutri-score-large nutri-score-d" style="width: 60px; height: 60px; line-height: 60px; font-size: 1.5rem; display: flex; align-items: center; justify-content: center;">D</div>
                             <div>
                                 <h3 style="margin: 0;">Poor</h3>
                                 <p style="margin: 0;">Nutritionally poor products that should be consumed occasionally.</p>
                             </div>
                         </div>
                         <div style="display: flex; align-items: center; gap: 1rem;">
-                            <div class="nutri-score-large nutri-score-e" style="width: 60px; height: 60px; line-height: 60px; font-size: 1.5rem;">E</div>
+                            <div class="nutri-score-large nutri-score-e" style="width: 60px; height: 60px; line-height: 60px; font-size: 1.5rem; display: flex; align-items: center; justify-content: center;">E</div>
                             <div>
                                 <h3 style="margin: 0;">Very Poor</h3>
                                 <p style="margin: 0;">Products with the worst nutritional quality. Should be consumed rarely.</p>
@@ -1793,10 +2105,7 @@
             <div class="container">
                 <div class="info-content">
                     <h1>Product Database</h1>
-                    <div class="development-notice">
-                        <h3>Under Development</h3>
-                        <p>Our comprehensive product database is currently being expanded and improved. We're working hard to add more products and enhance our nutritional analysis capabilities.</p>
-                    </div>
+                    <p>Our comprehensive product database contains nutritional information for thousands of food products from around the world. We're constantly expanding our database to provide you with the most accurate and up-to-date information.</p>
                     
                     <h2>About Our Database</h2>
                     <p>Lynx uses a comprehensive database of food products from around the world. Our database includes:</p>
@@ -1808,49 +2117,18 @@
                         <li>Regular updates as new products enter the market</li>
                     </ul>
                     
-                    <h2>Coming Soon</h2>
-                    <p>We're continuously working to improve our database with:</p>
+                    <h2>Database Sources</h2>
+                    <p>We source our data from multiple reliable sources including:</p>
                     
                     <ul>
-                        <li>More international products</li>
-                        <li>Enhanced ingredient analysis</li>
-                        <li>Allergen alerts and dietary restriction information</li>
-                        <li>User-submitted product data</li>
+                        <li>Open Food Facts - A collaborative database of food products</li>
+                        <li>Manufacturer-provided information</li>
+                        <li>Independent laboratory testing</li>
+                        <li>User contributions (verified by our team)</li>
                     </ul>
-                </div>
-            </div>
-        </section>
-
-        <section id="contact" class="page info-page">
-            <div class="container">
-                <div class="info-content">
-                    <h1>Contact Us</h1>
-                    <p>We'd love to hear from you! Whether you have questions, feedback, or just want to say hello, don't hesitate to get in touch.</p>
                     
-                    <h2>Get in Touch</h2>
-                    <p><strong>Email:</strong> sssean.kk@gmail.com</p>
-                    <p><strong>Address:</strong> Melbourne, Australia</p>
-                    
-                    <h2>Feedback & Support</h2>
-                    <p>If you're experiencing issues with the app or have suggestions for improvement, please use our feedback form:</p>
-                    
-                    <div class="text-center mt-4">
-                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSeu8lnGe0tYj5zX9lRNvPahoXb7QhAJzFLMzXmFEA1RhrmOLw/viewform?usp=sharing&ouid=106729985250333365535" target="_blank" class="btn btn-primary">
-                            <i class="fas fa-comment"></i> Submit Feedback
-                        </a>
-                    </div>
-                    
-                    <h2>Join Our Community</h2>
-                    <p>Connect with us on our social platforms:</p>
-                    
-                    <div class="social-links">
-                        <a href="https://discord.gg/HqNK9vzdxn" target="_blank" class="social-link">
-                            <i class="fab fa-discord"></i>
-                        </a>
-                        <a href="https://www.youtube.com/@OfficialLynxCrypto" target="_blank" class="social-link">
-                            <i class="fab fa-youtube"></i>
-                        </a>
-                    </div>
+                    <h2>Missing Products</h2>
+                    <p>If you scan a product that isn't in our database, you can help us by submitting the product information through our contact form. Our team will review and add it as quickly as possible.</p>
                 </div>
             </div>
         </section>
@@ -1879,7 +2157,39 @@
                     <p>We take privacy seriously. Your personal information and scan history are stored securely and are never shared with third parties without your consent. For more details, please see our Privacy Policy.</p>
                     
                     <h2>How can I report an error?</h2>
-                    <p>If you find incorrect information for a product, please use our feedback form to let us know. We'll investigate and correct any errors as quickly as possible.</p>
+                    <p>If you find incorrect information for a product, please use our contact form to let us know. We'll investigate and correct any errors as quickly as possible.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="page info-page">
+            <div class="container">
+                <div class="info-content">
+                    <h1>Contact Us</h1>
+                    <p>We'd love to hear from you! Whether you have questions, feedback, or just want to say hello, don't hesitate to get in touch.</p>
+                    
+                    <h2>Get in Touch</h2>
+                    <p><strong>Email:</strong> sssean.kk@gmail.com</p>
+                    <p><strong>Address:</strong> Melbourne, Australia</p>
+                    
+                    <h2>Contact Form</h2>
+                    <p>Use the form below to send us a message directly:</p>
+                    
+                    <div class="text-center mt-4">
+                        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeu8lnGe0tYj5zX9lRNvPahoXb7QhAJzFLMzXmFEA1RhrmOLw/viewform?embedded=true" width="100%" height="600" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+                    </div>
+                    
+                    <h2>Join Our Community</h2>
+                    <p>Connect with us on our social platforms:</p>
+                    
+                    <div class="social-links">
+                        <a href="https://discord.gg/HqNK9vzdxn" target="_blank" class="social-link">
+                            <i class="fab fa-discord"></i>
+                        </a>
+                        <a href="https://www.youtube.com/@OfficialLynxCrypto" target="_blank" class="social-link">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </section>
@@ -1925,7 +2235,7 @@
                     <h2>Your Legal Rights</h2>
                     <p>Under certain circumstances, you have rights under data protection laws in relation to your personal data, including the right to request access, correction, erasure, restriction, transfer, or to withdraw consent.</p>
                     
-                    <p>If you wish to exercise any of the rights set out above, please contact us at privacy@lynxapp.com.</p>
+                    <p>If you wish to exercise any of the rights set out above, please contact us at sssean.kk@gmail.com.</p>
                 </div>
             </div>
         </section>
@@ -1980,6 +2290,22 @@
             <div class="modal-footer">
                 <button class="btn btn-outline" onclick="closeModal('clear-history-modal')">Cancel</button>
                 <button class="btn btn-primary" onclick="clearScanHistory()">Clear History</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Review Confirmation Modal -->
+    <div class="modal" id="review-confirmation-modal">
+        <div class="modal-content confirmation-modal">
+            <div class="confirmation-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3 class="modal-title">Review Submitted!</h3>
+            <div class="modal-body">
+                <p>Thank you for sharing your feedback. Your review has been successfully submitted.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeModal('review-confirmation-modal')">OK</button>
             </div>
         </div>
     </div>
@@ -2139,7 +2465,7 @@
             }
         }
 
-        // Enhanced ProductScanner class with fixed camera functionality
+        // Enhanced ProductScanner class with Gemini AI integration
         class ProductScanner {
             constructor(authSystem) {
                 this.authSystem = authSystem;
@@ -2147,6 +2473,7 @@
                 this.stream = null;
                 this.quaggaInitialized = false;
                 this.scanTimeout = null;
+                this.geminiApiKey = 'AIzaSyC0E6JMQQNq-Tv2iOOAW16QVOpEZ1nTxiQ';
             }
 
             async scanBarcode(barcode) {
@@ -2213,6 +2540,130 @@
                     const scanningText = document.getElementById('scanning-text');
                     if (scanningText) scanningText.textContent = 'Align barcode within frame';
                 }
+            }
+
+            // Gemini AI Analysis - Fixed version
+            async getAIAnalysis(product) {
+                try {
+                    // Create a prompt for Gemini
+                    const prompt = `
+                    Analyze this food product and provide a concise health assessment:
+                    
+                    Product: ${product.product_name || 'Unknown'}
+                    Brand: ${product.brands || 'Unknown'}
+                    Nutrition Grade: ${product.nutri_score ? product.nutri_score.toUpperCase() : 'Unknown'}
+                    ${product.nutriments ? `
+                    Nutritional Information (per 100g):
+                    - Energy: ${product.nutriments.energy || 'N/A'} kcal
+                    - Fat: ${product.nutriments.fat || 'N/A'}g
+                    - Saturated Fat: ${product.nutriments.saturated_fat || 'N/A'}g
+                    - Sugars: ${product.nutriments.sugars || 'N/A'}g
+                    - Salt: ${product.nutriments.salt || 'N/A'}g
+                    - Fiber: ${product.nutriments.fiber || 'N/A'}g
+                    - Protein: ${product.nutriments.protein || 'N/A'}g
+                    ` : ''}
+                    ${product.ingredients_text ? `Ingredients: ${product.ingredients_text}` : ''}
+                    
+                    Please provide:
+                    1. A brief health assessment
+                    2. Key strengths and concerns
+                    3. Recommendation for consumption
+                    4. Healthier alternatives if applicable
+                    
+                    Keep the response concise and practical for everyday consumers.
+                    `;
+
+                    // Call Gemini API with correct endpoint
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${this.geminiApiKey}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            contents: [{
+                                parts: [{
+                                    text: prompt
+                                }]
+                            }]
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API request failed with status ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    
+                    if (data && data.candidates && data.candidates[0] && data.candidates[0].content) {
+                        return data.candidates[0].content.parts[0].text;
+                    } else {
+                        console.error('Unexpected API response structure:', data);
+                        return "AI analysis is currently unavailable. Please try again later.";
+                    }
+                } catch (error) {
+                    console.error('Gemini API error:', error);
+                    // Fallback analysis if API fails
+                    return this.generateFallbackAnalysis(product);
+                }
+            }
+
+            // Fallback analysis if Gemini API fails
+            generateFallbackAnalysis(product) {
+                let analysis = "Based on the nutritional information:\n\n";
+                
+                if (product.nutri_score) {
+                    analysis += `This product has a ${product.nutri_score.toUpperCase()} nutrition grade. `;
+                    
+                    switch(product.nutri_score) {
+                        case 'a':
+                        case 'b':
+                            analysis += "This is a healthy choice that can be consumed regularly. ";
+                            break;
+                        case 'c':
+                            analysis += "This product has average nutritional quality and should be consumed in moderation. ";
+                            break;
+                        case 'd':
+                        case 'e':
+                            analysis += "This product has poor nutritional quality and should be consumed occasionally. Consider healthier alternatives. ";
+                            break;
+                    }
+                }
+                
+                if (product.nutriments) {
+                    const concerns = [];
+                    const benefits = [];
+                    
+                    if (product.nutriments.sugars > 15) concerns.push("high sugar content");
+                    if (product.nutriments.saturated_fat > 5) concerns.push("high saturated fat");
+                    if (product.nutriments.salt > 1.5) concerns.push("high salt content");
+                    if (product.nutriments.fiber > 3) benefits.push("good fiber content");
+                    if (product.nutriments.protein > 10) benefits.push("good protein content");
+                    
+                    if (concerns.length > 0) {
+                        analysis += `Key concerns include ${concerns.join(', ')}. `;
+                    }
+                    
+                    if (benefits.length > 0) {
+                        analysis += `Positive aspects include ${benefits.join(', ')}. `;
+                    }
+                }
+                
+                analysis += "\n\nFor optimal health, balance this product with fruits, vegetables, and whole foods in your diet.";
+                
+                return analysis;
+            }
+
+            // Calculate numeric score (0-100) based on Nutri-Score
+            calculateNumericScore(nutriScore) {
+                const scoreMap = {
+                    'a': 90,
+                    'b': 75,
+                    'c': 60,
+                    'd': 40,
+                    'e': 20
+                };
+                
+                return scoreMap[nutriScore] || 50;
             }
 
             // Fixed camera scanning methods
@@ -2418,16 +2869,18 @@
                 return consequences;
             }
 
-            displayProduct(product) {
+            async displayProduct(product) {
                 const benefits = this.getHealthBenefits(product);
                 const consequences = this.getHealthConsequences(product);
+                const numericScore = this.calculateNumericScore(product.nutri_score);
                 
+                // Show loading for AI analysis
                 const productCard = document.createElement('div');
                 productCard.className = 'product-card';
                 productCard.innerHTML = `
                     <div class="product-header">
                         <div class="product-image">
-                            ${product.image_url ? `<img src="${product.image_url}" alt="${product.product_name}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">` : `<i class="fas fa-utensils"></i>`}
+                            ${product.image_url ? `<img src="${product.image_url}" alt="${product.product_name}">` : `<i class="fas fa-utensils"></i>`}
                         </div>
                         <div>
                             <h2>${product.product_name || 'Product name not available'}</h2>
@@ -2442,6 +2895,7 @@
                         <div class="nutri-score-large nutri-score-${product.nutri_score}">
                             ${product.nutri_score.toUpperCase()}
                         </div>
+                        <div class="numeric-score">Score: ${numericScore}/100</div>
                         <p class="score-description">
                             ${product.nutri_score === 'a' ? 'Excellent - Very healthy choice' : ''}
                             ${product.nutri_score === 'b' ? 'Good - Healthy choice' : ''}
@@ -2449,6 +2903,9 @@
                             ${product.nutri_score === 'd' ? 'Poor - Consume in moderation' : ''}
                             ${product.nutri_score === 'e' ? 'Very Poor - Avoid frequent consumption' : ''}
                         </p>
+                        ${['d', 'e'].includes(product.nutri_score) ? 
+                            '<div class="error-message" style="margin-top: 1rem;"><strong>Recommendation:</strong> This product has a low health score. Consider healthier alternatives with better nutritional profiles.</div>' : 
+                            ''}
                     </div>
                     ` : ''}
 
@@ -2518,16 +2975,138 @@
                             ` : ''}
                         </div>
                     </div>
+
+                    <div class="ai-analysis">
+                        <h3><i class="fas fa-robot"></i> AI Analysis</h3>
+                        <div class="ai-loading">
+                            <div class="spinner"></div>
+                            <span>Generating AI analysis...</span>
+                        </div>
+                    </div>
+
+                    <div class="review-section">
+                        <h3>User Reviews</h3>
+                        <div class="review-form">
+                            <h4>Add Your Review</h4>
+                            <div class="rating-input">
+                                <span class="rating-star" data-rating="1">★</span>
+                                <span class="rating-star" data-rating="2">★</span>
+                                <span class="rating-star" data-rating="3">★</span>
+                                <span class="rating-star" data-rating="4">★</span>
+                                <span class="rating-star" data-rating="5">★</span>
+                            </div>
+                            <textarea class="review-input" placeholder="Share your thoughts about this product..."></textarea>
+                            <button class="btn btn-primary" onclick="submitProductReview('${product.barcode}', '${product.product_name}')">Submit Review</button>
+                        </div>
+                        <div class="review-list" id="product-reviews-${product.barcode}">
+                            <!-- Product reviews will be loaded here -->
+                        </div>
+                    </div>
                 `;
 
                 document.getElementById('product-result').innerHTML = '';
                 document.getElementById('product-result').appendChild(productCard);
+
+                // Load AI analysis
+                const aiAnalysis = await this.getAIAnalysis(product);
+                const aiSection = productCard.querySelector('.ai-analysis');
+                aiSection.innerHTML = `
+                    <h3><i class="fas fa-robot"></i> AI Analysis</h3>
+                    <div class="ai-analysis-content">${aiAnalysis}</div>
+                `;
+
+                // Load product reviews
+                this.loadProductReviews(product.barcode);
+                
+                // Initialize rating stars for this product
+                this.initializeRatingStars(productCard);
+            }
+
+            // Initialize rating stars for a specific product card
+            initializeRatingStars(productCard) {
+                const stars = productCard.querySelectorAll('.rating-star');
+                stars.forEach(star => {
+                    star.addEventListener('click', function() {
+                        const rating = parseInt(this.getAttribute('data-rating'));
+                        const parent = this.parentElement;
+                        
+                        // Update all stars in this rating input
+                        parent.querySelectorAll('.rating-star').forEach((s, index) => {
+                            if (index < rating) {
+                                s.classList.add('active');
+                            } else {
+                                s.classList.remove('active');
+                            }
+                        });
+                    });
+                });
+            }
+
+            // Load reviews for a specific product
+            loadProductReviews(barcode) {
+                const reviews = JSON.parse(localStorage.getItem('lynxReviews')) || [];
+                const productReviews = reviews.filter(review => review.productBarcode === barcode);
+                const reviewsContainer = document.getElementById(`product-reviews-${barcode}`);
+                
+                if (reviewsContainer) {
+                    if (productReviews.length > 0) {
+                        reviewsContainer.innerHTML = productReviews.map(review => `
+                            <div class="review-item">
+                                <div class="review-header">
+                                    <div class="reviewer-name">${review.userName}</div>
+                                    <div class="review-date">${new Date(review.date).toLocaleDateString()}</div>
+                                </div>
+                                <div class="review-rating">${'★'.repeat(review.rating)}${'☆'.repeat(5-review.rating)}</div>
+                                <div class="review-text">${review.comment}</div>
+                            </div>
+                        `).join('');
+                    } else {
+                        reviewsContainer.innerHTML = '<p>No reviews yet. Be the first to review this product!</p>';
+                    }
+                }
+            }
+        }
+
+        // Review System
+        class ReviewSystem {
+            constructor() {
+                this.reviews = JSON.parse(localStorage.getItem('lynxReviews')) || [];
+            }
+
+            submitReview(productName, productBarcode, userName, rating, comment) {
+                const review = {
+                    id: this.generateId(),
+                    productName,
+                    productBarcode,
+                    userName,
+                    rating,
+                    comment,
+                    date: new Date().toISOString()
+                };
+
+                this.reviews.unshift(review);
+                localStorage.setItem('lynxReviews', JSON.stringify(this.reviews));
+                
+                return review;
+            }
+
+            getAllReviews() {
+                return this.reviews;
+            }
+
+            getProductReviews(barcode) {
+                return this.reviews.filter(review => review.productBarcode === barcode);
+            }
+
+            generateId() {
+                return 'review_' + Math.random().toString(36).substr(2, 9);
             }
         }
 
         // Initialize the application
         const authSystem = new AuthSystem();
         const productScanner = new ProductScanner(authSystem);
+        const reviewSystem = new ReviewSystem();
 
         // Loading functions
         function showLoading() {
@@ -2557,7 +3136,7 @@
                 });
 
                 // Update active nav link for main navigation only
-                if (['home', 'scan', 'profile', 'login', 'register'].includes(pageId)) {
+                if (['home', 'scan', 'profile', 'reviews', 'login', 'register'].includes(pageId)) {
                     const activeNavLink = document.querySelector(`nav a[onclick="showPage('${pageId}')"]`);
                     if (activeNavLink) {
                         activeNavLink.classList.add('active');
@@ -2575,11 +3154,137 @@
                     
                     // Stop camera if it's running
                     productScanner.stopCamera();
+                } else if (pageId === 'reviews') {
+                    loadAllReviews();
                 }
                 
                 hideLoading();
             }, 500);
         }
+
+        // Load all reviews for the reviews page
+        function loadAllReviews() {
+            const reviews = reviewSystem.getAllReviews();
+            const reviewsList = document.getElementById('reviews-list');
+            
+            if (reviews.length > 0) {
+                reviewsList.innerHTML = reviews.map(review => `
+                    <div class="review-item">
+                        <div class="review-header">
+                            <div class="reviewer-name">${review.userName}</div>
+                            <div class="review-date">${new Date(review.date).toLocaleDateString()}</div>
+                        </div>
+                        <div class="review-rating">${'★'.repeat(review.rating)}${'☆'.repeat(5-review.rating)}</div>
+                        <div class="review-text">
+                            <strong>${review.productName}</strong><br>
+                            ${review.comment}
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                reviewsList.innerHTML = '<p>No reviews yet. Be the first to submit a review!</p>';
+            }
+        }
+
+        // Submit a review from the reviews page
+        function submitReview() {
+            if (!authSystem.currentUser) {
+                alert('Please log in to submit a review.');
+                showPage('login');
+                return;
+            }
+
+            const productName = document.getElementById('review-product').value;
+            const comment = document.getElementById('review-text').value;
+            const activeStar = document.querySelector('.rating-star.active');
+            const rating = activeStar ? parseInt(activeStar.getAttribute('data-rating')) : 0;
+
+            if (!productName || !comment || rating === 0) {
+                alert('Please fill in all fields and select a rating.');
+                return;
+            }
+
+            const review = reviewSystem.submitReview(
+                productName, 
+                'manual', 
+                authSystem.currentUser.name, 
+                rating, 
+                comment
+            );
+
+            // Reset form
+            document.getElementById('review-product').value = '';
+            document.getElementById('review-text').value = '';
+            document.querySelectorAll('.rating-star').forEach(star => {
+                star.classList.remove('active');
+            });
+
+            // Reload reviews
+            loadAllReviews();
+            
+            // Show custom confirmation modal
+            showReviewConfirmation();
+        }
+
+        // Submit a review for a specific product
+        function submitProductReview(barcode, productName) {
+            if (!authSystem.currentUser) {
+                alert('Please log in to submit a review.');
+                showPage('login');
+                return;
+            }
+
+            const reviewSection = document.querySelector(`#product-reviews-${barcode}`).closest('.review-section');
+            const comment = reviewSection.querySelector('.review-input').value;
+            const activeStar = reviewSection.querySelector('.rating-star.active');
+            const rating = activeStar ? parseInt(activeStar.getAttribute('data-rating')) : 0;
+
+            if (!comment || rating === 0) {
+                alert('Please provide both a rating and comment.');
+                return;
+            }
+
+            const review = reviewSystem.submitReview(
+                productName, 
+                barcode, 
+                authSystem.currentUser.name, 
+                rating, 
+                comment
+            );
+
+            // Reset form
+            reviewSection.querySelector('.review-input').value = '';
+            reviewSection.querySelectorAll('.rating-star').forEach(star => {
+                star.classList.remove('active');
+            });
+
+            // Reload product reviews
+            productScanner.loadProductReviews(barcode);
+            
+            // Show custom confirmation modal
+            showReviewConfirmation();
+        }
+
+        // Show custom review confirmation modal
+        function showReviewConfirmation() {
+            document.getElementById('review-confirmation-modal').style.display = 'flex';
+        }
+
+        // Rating star interaction
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('rating-star')) {
+                const stars = e.target.parentElement.querySelectorAll('.rating-star');
+                const rating = parseInt(e.target.getAttribute('data-rating'));
+                
+                stars.forEach((star, index) => {
+                    if (index < rating) {
+                        star.classList.add('active');
+                    } else {
+                        star.classList.remove('active');
+                    }
+                });
+            }
+        });
 
         // Toggle between barcode number and image scanning
         function toggleScanOption(option) {
@@ -2722,7 +3427,7 @@
                     const result = await productScanner.scanBarcode(barcode);
                     
                     if (result.success) {
-                        productScanner.displayProduct(result.product);
+                        await productScanner.displayProduct(result.product);
                     } else {
                         errorDiv.textContent = result.message;
                         errorDiv.style.display = 'block';
@@ -2736,6 +3441,24 @@
                     submitButton.disabled = false;
                     submitButton.textContent = 'Scan Product';
                 }
+            });
+
+            // Initialize rating stars on the reviews page
+            const reviewStars = document.querySelectorAll('.rating-input .rating-star');
+            reviewStars.forEach(star => {
+                star.addEventListener('click', function() {
+                    const rating = parseInt(this.getAttribute('data-rating'));
+                    const parent = this.parentElement;
+                    
+                    // Update all stars in this rating input
+                    parent.querySelectorAll('.rating-star').forEach((s, index) => {
+                        if (index < rating) {
+                            s.classList.add('active');
+                        } else {
+                            s.classList.remove('active');
+                        }
+                    });
+                });
             });
 
             // Hide header on scroll down, show on scroll up
